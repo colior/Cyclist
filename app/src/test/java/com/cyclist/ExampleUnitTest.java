@@ -1,15 +1,11 @@
 package com.cyclist;
 
-import com.cyclist.logic.common.Utils;
+import com.cyclist.Logic.Common.Utils;
 
 import org.junit.Test;
 
-import java.security.Key;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class ExampleUnitTest {
     @Test

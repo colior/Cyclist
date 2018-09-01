@@ -1,4 +1,4 @@
-package com.cyclist.logic.common;
+package com.cyclist.Logic.Common;
 
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;

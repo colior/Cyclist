@@ -1,4 +1,4 @@
-package com.cyclist.logic.usernetwork.report;
+package com.cyclist.Logic.Model;
 
 import java.util.Date;
 
