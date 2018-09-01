@@ -2,7 +2,7 @@ package com.cyclist.UI;
 
 import android.location.Location;
 
-import com.cyclist.Logic.LogicManager;
+import com.cyclist.logic.LogicManager;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -16,6 +16,7 @@ public class UIManager {
 
     public void setMap(MapView map) {
         this.map = map;
+        initMap();
     }
     private void initMap(){
         map.setTileSource(TileSourceFactory.MAPNIK);
