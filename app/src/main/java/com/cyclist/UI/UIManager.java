@@ -16,6 +16,7 @@ public class UIManager {
 
     public void setMap(MapView map) {
         this.map = map;
+        initMap();
     }
     private void initMap(){
         map.setTileSource(TileSourceFactory.MAPNIK);
