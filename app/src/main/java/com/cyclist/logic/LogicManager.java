@@ -1,4 +1,4 @@
-package com.cyclist.Logic;
+package com.cyclist.logic;
 
 import android.Manifest;
 import android.app.Activity;
@@ -13,7 +13,16 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.cyclist.Logic.Common.Constants;
+import com.cyclist.logic.common.Constants;
+import com.cyclist.logic.firebase.DBService;
+import com.cyclist.logic.history.History;
+import com.cyclist.logic.history.HistoryService;
+import com.cyclist.logic.report.Report;
+import com.cyclist.logic.report.ReportService;
+import com.cyclist.logic.user.User;
+import com.cyclist.logic.user.UserService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
@@ -21,13 +30,17 @@ import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
 
 import static android.content.Context.LOCATION_SERVICE;
-import static com.cyclist.Logic.Common.Constants.LOCATION_REFRESH_DISTANCE;
-import static com.cyclist.Logic.Common.Constants.LOCATION_REFRESH_TIME;
+import static com.cyclist.logic.common.Constants.LOCATION_REFRESH_DISTANCE;
+import static com.cyclist.logic.common.Constants.LOCATION_REFRESH_TIME;
 
 public class LogicManager {
-    private static LogicManager ourInstance = null;
+    private static LogicManager instance = null;
     private Activity mActivity;
     private Context mContext;
+    private DBService dbService;
+    private UserService userService = new UserService();
+    private HistoryService historyService = new HistoryService();
+    private ReportService reportService = new ReportService();
 
     private RoadManager roadManager = new MapQuestRoadManager(Constants.MAPQUEST_KEY);
     //roadManager.addRequestOption("routeType=bicycle");
@@ -36,19 +49,19 @@ public class LogicManager {
     private IGeoPoint currentLoction;
 
     private LogicManager() {
-
+        dbService = DBService.getInstance();
     }
 
     public static LogicManager getInstance() {
-        if (ourInstance == null) {
+        if (instance == null) {
             synchronized (LogicManager.class) {
-                if (ourInstance == null) {
-                    ourInstance = new LogicManager();
-                    return ourInstance;
+                if (instance == null) {
+                    instance = new LogicManager();
+                    return instance;
                 }
             }
         }
-        return ourInstance;
+        return instance;
     }
 
     public void setUpLocationListner(Activity activity) {
@@ -116,6 +129,44 @@ public class LogicManager {
             return new GeoPoint(mLocationManager.getLastKnownLocation(bestProvider));
         }
         return currentLoction;
+    }
+
+    public FirebaseAuth getAuth(){
+        return dbService.getMAuth();
+    }
+
+    public FirebaseUser getCurrentUser(){
+        return dbService.getCurrentUser();
+    }
+
+    public boolean saveUser(User user){
+        try{
+            userService.save(user);
+        }
+        catch (Exception ex){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean saveReport(Report report){
+        try{
+            reportService.save(report);
+        }
+        catch (Exception ex){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean saveHistory(History history){
+        try{
+            historyService.save(history);
+        }
+        catch (Exception ex){
+            return false;
+        }
+        return true;
     }
 }
 

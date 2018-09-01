@@ -1,4 +1,4 @@
-package com.cyclist.Logic.Model;
+package com.cyclist.logic.search;
 
 public class Profile {
 

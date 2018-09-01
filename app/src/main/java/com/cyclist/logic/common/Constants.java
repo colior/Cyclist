@@ -1,4 +1,4 @@
-package com.cyclist.Logic.Common;
+package com.cyclist.logic.common;
 
 public class Constants {
     public static final String MAPQUEST_KEY = "xkZG7uv9WqyYmo80b8OVmaCX4jil9NNm";

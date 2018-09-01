@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1068506564045",
+    "firebase_url": "https://cyclist-fee33.firebaseio.com",
+    "project_id": "cyclist-fee33",
+    "storage_bucket": "cyclist-fee33.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068506564045:android:7fa8cca9903ccc5b",
+        "android_client_info": {
+          "package_name": "com.cyclist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068506564045-g2j5v7gs2iqf6eglu4vc6lc8jrphi1jk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cyclist",
+            "certificate_hash": "a3b0e11a05c0d91e4b17335bbb3616823980ed5c"
+          }
+        },
+        {
+          "client_id": "1068506564045-n1kgtb7vd10uhn64ev0geuigh7sjk6a5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtnSJrNy1Pz1cJIxadoM2iGbPoA2nbIO0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068506564045-n1kgtb7vd10uhn64ev0geuigh7sjk6a5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
