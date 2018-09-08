@@ -13,19 +13,19 @@ import lombok.Getter;
 
 public class DBService{
 
-    @Getter
-    private FirebaseAuth mAuth;
     private static DBService instance;
+
+    private FirebaseAuth mAuth;
+
+    private DBService() {
+        mAuth = FirebaseAuth.getInstance();
+    }
 
     public static DBService getInstance() {
         if (instance == null){
             instance = new DBService();
         }
         return instance;
-    }
-
-    private DBService(){
-        mAuth = FirebaseAuth.getInstance();
     }
 
     public FirebaseUser getCurrentUser() {
@@ -37,5 +37,9 @@ public class DBService{
         DatabaseReference myRef = database.getReference(bucketName + "/" + mAuth.getUid());
 
         myRef.setValue(obj);
+    }
+
+    public FirebaseAuth getMAuth() {
+        return mAuth;
     }
 }
