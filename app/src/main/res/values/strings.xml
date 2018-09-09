@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Cyclist</string>
+    <string name="bt_center_map_description">Center Me</string>
 </resources>

@@ -20,6 +20,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".logic.FollowLocationService"
+            android:process=":my_service" />
+        <receiver
+            android:name=".logic.LocationReceiver"
+            android:exported="true" />
     </application>
 
 </manifest>
