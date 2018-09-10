@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SignUp"
+    android:background="@drawable/signup_image">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/signup"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/connection_details"
+            android:gravity="left"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="5dp"/>
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:textColor="#ffffff"
+            android:textColorHint="#919191"
+            android:background="@drawable/back"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:lines="1"
+            android:focusable="true"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:focusableInTouchMode="true" />
+        <EditText
+            android:id="@+id/password"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/password"
+            android:textColor="#ffffff"
+            android:textColorHint="#919191"
+            android:background="@drawable/back"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:lines="1"
+            android:focusable="true"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:focusableInTouchMode="true"/>
+        <EditText
+            android:id="@+id/verifyPassword"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/verify_password"
+            android:textColor="#ffffff"
+            android:textColorHint="#919191"
+            android:background="@drawable/back"
+            android:layout_marginBottom="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:lines="1"
+            android:focusable="true"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:focusableInTouchMode="true"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/about_you"
+            android:gravity="left"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="5dp"/>
+
+        <EditText
+            android:id="@+id/firstName"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/first_name"
+            android:textColor="#ffffff"
+            android:textColorHint="#919191"
+            android:background="@drawable/back"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:lines="1"
+            android:focusable="true"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:focusableInTouchMode="true" />
+
+        <EditText
+            android:id="@+id/lastName"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/last_name"
+            android:textColor="#ffffff"
+            android:textColorHint="#919191"
+            android:background="@drawable/back"
+            android:layout_marginBottom="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:lines="1"
+            android:focusable="true"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
+            android:focusableInTouchMode="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/birthday"
+            android:gravity="left"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="5dp"/>
+
+        <TextView
+            android:id="@+id/datePickerTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/select_date"
+            android:gravity="center"
+            android:textSize="30sp"
+            android:textColorHint="#ffffff"
+            android:textColor="#ffffff"
+            android:focusable="false"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ride"
+            android:gravity="left"
+            android:textSize="20sp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="5dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Spinner
+                android:id="@+id/rideSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:entries="@array/rides"
+                android:gravity="center"
+                style="@style/Widget.AppCompat.Light.DropDownItem.Spinner"
+                android:imeOptions="actionDone"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="bottom">
+            <Button
+                android:id="@+id/registerButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:textAllCaps="false"
+                android:text="@string/register"
+                android:background="@drawable/back"
+                android:layout_marginBottom="30dp"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

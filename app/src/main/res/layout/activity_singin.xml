@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SignIn"
+    android:background="@drawable/login_image">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp">
+        <TextView
+            android:layout_marginTop="165dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_signin_logo"
+            android:gravity="center"
+            android:textSize="26sp"
+            android:textColor="#ffffff"
+            android:shadowColor="#000000"
+            android:shadowDx="5"
+            android:shadowDy="5"
+            android:shadowRadius="2"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sub_signin_logo"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="#eac700"
+            android:layout_marginBottom="220dp"
+            />
+
+        <Button
+            android:id="@+id/signUpButton"
+            android:layout_width="78dp"
+            android:layout_height="25dp"
+            android:background="@null"
+            android:text="@string/signup"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:layout_marginBottom="10dp"
+            android:textAllCaps="false"/>
+
+        <EditText
+            android:id="@+id/usernameEditText"
+            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/email"
+            android:textColor="#ffffff"
+            android:textColorHint="#ffffff"
+            android:background="@drawable/back"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:alpha=".5"
+            android:lines="1"
+            android:focusable="true"
+            android:singleLine="true"
+            android:imeOptions="actionNext"
+            android:focusableInTouchMode="true"/>
+
+        <EditText
+            android:id="@+id/passwordEditText"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:textColor="#ffffff"
+            android:textColorHint="#ffffff"
+            android:background="@drawable/back"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:alpha=".5"
+            android:imeOptions="actionDone"/>
+
+        <Button
+            android:id="@+id/signInButton"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:text="@string/login"
+            android:background="@drawable/back"
+            android:layout_marginBottom="10dp"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/facebook_login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="1dp"
+                />
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/google_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:layout_gravity="top"
+                android:layout_marginLeft="1dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

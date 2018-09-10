@@ -1,13 +1,9 @@
 package com.cyclist.logic.firebase;
 
-import android.support.v7.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.UUID;
 
 import lombok.Getter;
 

@@ -13,14 +13,41 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User {
 
-    private String username;
-    private String password;
+    public enum RideType
+    {
+        BIKE("Bicycle"),
+        ELECTRIC_BIKE("Electric Bicycle"),
+        ELECTRIC_SCOOTER("Electric Scooter"),
+        SEGWAY("Segway");
+
+        private String displayName;
+
+        RideType(String displayName){
+            this.displayName = displayName;
+        }
+
+        public String getValue() {
+            return displayName;
+        }
+
+        public static RideType getByDisplayName(String displayName){
+            for(RideType rideType : RideType.values()){
+                if(rideType.getValue().equals(displayName)){
+                    return rideType;
+                }
+            }
+            return null;
+        }
+    }
+
+    private String email;
     private String fName;
     private String lName;
     private int km;
     private Date birthday;
     private String home;
     private String work;
+    private RideType rideType;
     private List<Favorite> favorites = new LinkedList<>();
 
     @Data

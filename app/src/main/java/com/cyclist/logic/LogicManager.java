@@ -38,9 +38,9 @@ public class LogicManager {
     private Activity mActivity;
     private Context mContext;
     private DBService dbService;
-    private UserService userService = new UserService();
-    private HistoryService historyService = new HistoryService();
-    private ReportService reportService = new ReportService();
+    private UserService userService = UserService.getInstance();
+    private HistoryService historyService = HistoryService.getInstance();
+    private ReportService reportService = ReportService.getInstance();
 
     private RoadManager roadManager = new MapQuestRoadManager(Constants.MAPQUEST_KEY);
     //roadManager.addRequestOption("routeType=bicycle");
