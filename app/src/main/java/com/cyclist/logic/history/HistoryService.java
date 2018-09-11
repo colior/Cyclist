@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HistoryService {
 
-    private static final String HISTORY_BUCKET = "History";
+    public static final String HISTORY_BUCKET = "History";
     private static HistoryService instance;
     private DBService dbService = DBService.getInstance();
 

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReportService {
 
-    private static final String REPORTS_BUCKET = "Reports";
+    public static final String REPORTS_BUCKET = "Reports";
     private static ReportService instance;
     private DBService dbService = DBService.getInstance();
 

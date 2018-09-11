@@ -20,6 +20,9 @@
     <string name="failed_to_sign_in">Sign in failed</string>
     <string name="register">Register</string>
 
+    <string name="startChar">a</string>
+    <string name="endChar">z</string>
+
     <string name="error_sign_in_already_exist">Email is already exist</string>
     <string name="error_sign_in_failed">Authentication failed</string>
 

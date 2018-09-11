@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserService {
 
-    private static final String USERS_BUCKET = "Users";
+    public static final String USERS_BUCKET = "Users";
     private static UserService instance;
     private DBService dbService = DBService.getInstance();
 
@@ -21,5 +21,9 @@ public class UserService {
 
     public void save(User user){
         dbService.save(user, USERS_BUCKET);
+    }
+
+    public void saveNewUser(User user){
+        dbService.saveNewUser(user);
     }
 }

@@ -95,6 +95,7 @@
 
         <EditText
             android:id="@+id/firstName"
+            android:inputType="textPersonName"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:hint="@string/first_name"
@@ -112,6 +113,7 @@
 
         <EditText
             android:id="@+id/lastName"
+            android:inputType="textPersonName"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:hint="@string/last_name"
@@ -178,17 +180,17 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="bottom">
+
             <Button
                 android:id="@+id/registerButton"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:textColor="#ffffff"
-                android:textSize="15sp"
-                android:textAllCaps="false"
-                android:text="@string/register"
-                android:background="@drawable/back"
                 android:layout_marginBottom="30dp"
-                />
+                android:background="@drawable/back"
+                android:text="@string/register"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
         </LinearLayout>
 
     </LinearLayout>

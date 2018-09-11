@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,12 +20,14 @@ import android.widget.Toast;
 import com.cyclist.R;
 import com.cyclist.logic.LogicManager;
 import com.cyclist.logic.user.User;
-import com.cyclist.logic.user.UserService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
 import java.util.Calendar;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 public class SignUp extends AppCompatActivity {
 
@@ -38,7 +42,6 @@ public class SignUp extends AppCompatActivity {
     private Button registerButton;
     private TextView datePickerTextView;
     private Spinner rides;
-    private UserService userService = UserService.getInstance();
     private DatePickerDialog.OnDateSetListener dateSetListener;
 
     @Override
@@ -72,6 +75,7 @@ public class SignUp extends AppCompatActivity {
         datePickerTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                datePickerTextView.setTextColor(Color.WHITE);
                 new DatePickerDialog(SignUp.this, dateSetListener, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
@@ -83,30 +87,34 @@ public class SignUp extends AppCompatActivity {
                 register();
             }
         });
+
+        addOnChangeEvent(email);
+        addOnChangeEvent(fname);
+        addOnChangeEvent(lname);
+        addOnChangeEvent(password);
+        addOnChangeEvent(verifyPassword);
+
+    }
+
+    private void addOnChangeEvent(EditText editText) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                email.setTextColor(Color.WHITE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     private void register() {
-        if(veirfyFields()) {
+        if(verifyFields()) {
             signUp(email.getText().toString(), password.getText().toString());
         }
-    }
-
-    //TODO: fields verification
-    private boolean veirfyFields() {
-        boolean veirfy = true;
-        String emailField = email.getText().toString();
-        String passwordField = password.getText().toString();
-        String verifyPasswordField = verifyPassword.getText().toString();
-        String fnameField = fname.getText().toString();
-        String lnameField = lname.getText().toString();
-        String ridesField = rides.getSelectedItem().toString();
-        String datePickerTextViewField = datePickerTextView.getText().toString();
-
-//        if(emailField.isEmpty()){
-//            email.setTextColor(Color.RED);
-//        }
-
-        return veirfy;
     }
 
     private void updateDate(int year, int month, int dayOfMonth) {
@@ -136,8 +144,7 @@ public class SignUp extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            User user = createUser();
-                            userService.save(user);
+                            logicManager.saveUser(createUser());
                             Log.d(TAG, "Register:success");
 
                         } else {
@@ -158,5 +165,75 @@ public class SignUp extends AppCompatActivity {
         user.setBirthday(myCalendar.getTime());
         user.setRideType(User.RideType.getByDisplayName(rides.getSelectedItem().toString()));
         return user;
+    }
+
+    /******************************************* VALIDATION *******************************************/
+
+    //TODO: fields verification
+    private boolean verifyFields() {
+        boolean verify = true;
+        String emailField = email.getText().toString();
+        String passwordField = password.getText().toString();
+        String verifyPasswordField = verifyPassword.getText().toString();
+        String fnameField = fname.getText().toString();
+        String lnameField = lname.getText().toString();
+        String datePickerTextViewField = datePickerTextView.getText().toString();
+
+        if(emailField.isEmpty() || isValidEmailAddress(emailField)){
+            email.setTextColor(Color.RED);
+            verify = false;
+        }
+
+        if(passwordField.isEmpty() || passwordField.length() < 8){
+            password.setTextColor(Color.RED);
+            verify = false;
+        }
+
+        if(verifyPasswordField.isEmpty() || !verifyPasswordField.equals(passwordField)){
+            verifyPassword.setTextColor(Color.RED);
+            verify = false;
+        }
+
+        if(fnameField.isEmpty() || isValidName(fnameField)){
+            fname.setTextColor(Color.RED);
+            verify = false;
+        }
+
+        if(lnameField.isEmpty() || isValidName(lnameField)){
+            lname.setTextColor(Color.RED);
+            verify = false;
+        }
+
+        if(datePickerTextViewField.equals(getResources().getString(R.string.select_date))){
+            datePickerTextView.setTextColor(Color.RED);
+            verify = false;
+        }
+
+        if(verify){
+            registerButton.setEnabled(true);
+        }
+        return verify;
+    }
+
+    private boolean isValidName(String name) {
+        name = name.toLowerCase();
+        for(char ch : name.toCharArray()){
+            if(!(ch >= getResources().getString(R.string.startChar).toCharArray()[0] && ch <= getResources().getString(R.string.endChar).toCharArray()[0])){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean isValidEmailAddress(String email) {
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
     }
 }

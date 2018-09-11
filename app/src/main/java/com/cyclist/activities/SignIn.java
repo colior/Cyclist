@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.cyclist.R;
 import com.cyclist.logic.LogicManager;
+import com.cyclist.logic.user.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -148,6 +149,14 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         if (!username.getText().toString().isEmpty() && !password.getText().toString().isEmpty()) {
             signIn(username.getText().toString(), password.getText().toString());
         }
+    }
+
+    private User createUser(){
+        FirebaseUser firebaseUser = logicManager.getCurrentUser();
+        User user = new User();
+        user.setEmail(firebaseUser.getEmail());
+        user.setFName(firebaseUser.getDisplayName());
+        return user;
 
     }
 
@@ -214,7 +223,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            //TODO: create new user if there isn't
+                           logicManager.saveUser(createUser());
                             goToMainActivity(logicManager.getAuth().getCurrentUser());
                         } else {
                             // If sign in fails, display a message to the user.
@@ -276,9 +285,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-
-                            //TODO: create new user if there isn't
-
+                            logicManager.saveUser(createUser());
                             goToMainActivity(logicManager.getAuth().getCurrentUser());
                         } else {
                             // If sign in fails, display a message to the user.
