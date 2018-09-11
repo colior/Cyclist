@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_singin);
         initializeComponents();
     }
@@ -141,8 +143,8 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void goToMainActivity(FirebaseUser user) {
-        Intent mainActivityIntent = new Intent(SignIn.this, MainActivity.class);
-        startActivity(mainActivityIntent);
+//        Intent mainActivityIntent = new Intent(SignIn.this, MainActivity.class);
+//        startActivity(mainActivityIntent);
     }
 
     public void onSignInButtonClick(View view) {
