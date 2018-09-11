@@ -1,10 +1,18 @@
 package com.cyclist.UI;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 
+import com.cyclist.R;
 import com.cyclist.logic.LogicManager;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.tileprovider.tilesource.ThunderforestTileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -13,6 +21,8 @@ import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import static org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK;
 
 public class UIManager implements OnCenterMeClick, OnLocationChanged {
 
@@ -31,11 +41,15 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
 
     public void setMap(MapView map) {
         this.map = map;
+        if (ThunderforestTileSource.haveMapId(mContext)) {
+            ThunderforestTileSource tileSource = new ThunderforestTileSource(mContext, ThunderforestTileSource.CYCLE);
+            TileSourceFactory.addTileSource(tileSource);
+        }
         initMap();
     }
 
     private void initMap(){
-        map.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+        map.setTileSource(TileSourceFactory.getTileSource(ThunderforestTileSource.mapName(ThunderforestTileSource.CYCLE)));
         //map.setBuiltInZoomControls(true);
         map.setTilesScaledToDpi(true);
         map.setFlingEnabled(true);
@@ -46,7 +60,7 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
 
 
         setMapCompass();
-        setMyLocation();
+        initMyLocation();
         this.rotationGestureOverlay = new RotationGestureOverlay(map);
         rotationGestureOverlay.setEnabled(true);
 
@@ -55,12 +69,24 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
         map.getOverlays().add(this.rotationGestureOverlay);
     }
 
-    private void setMyLocation() {
+    public void pauseFollowMe() {
+        this.myLocationOverlay.disableFollowLocation();
+        this.myLocationOverlay.disableMyLocation();
+    }
+
+    public void resumeFollowMe() {
+        this.myLocationOverlay.enableFollowLocation();
+        this.myLocationOverlay.enableMyLocation();
+    }
+
+    private void initMyLocation() {
         this.myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(mContext),
                 map);
-        myLocationOverlay.enableMyLocation();
         myLocationOverlay.enableFollowLocation();
         myLocationOverlay.setOptionsMenuEnabled(true);
+        myLocationOverlay.setPersonIcon(drawableToBitmap(mContext.getResources().getDrawable(R.drawable.blue_dot)));
+        myLocationOverlay.setPersonHotspot(1, 1);
+        myLocationOverlay.enableMyLocation();
     }
 
     private void setMapCompass() {
@@ -72,9 +98,7 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
     @Override
     public void handleCenterMapClick() {
         if (currentDeviceLocation != null) {
-            map.getController().setZoom(18d);
             map.getController().animateTo(currentDeviceLocation);
-            map.setMapOrientation(0);
         }
     }
 
@@ -85,5 +109,18 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
         map.getController().animateTo(currentDeviceLocation);
         // TODO:: Remove old markers and Add new marker to location.
 
+    }
+
+    private Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 }
