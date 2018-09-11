@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -47,6 +48,7 @@ public class SignUp extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_signup);
         initializeComponents();
     }
@@ -96,18 +98,22 @@ public class SignUp extends AppCompatActivity {
 
     }
 
-    private void addOnChangeEvent(EditText editText) {
+    private void addOnChangeEvent(final EditText editText) {
         editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                email.setTextColor(Color.WHITE);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                editText.setTextColor(Color.WHITE);
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                editText.setTextColor(Color.WHITE);
+                editText.setBackground(getResources().getDrawable(R.drawable.back));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -179,33 +185,33 @@ public class SignUp extends AppCompatActivity {
         String lnameField = lname.getText().toString();
         String datePickerTextViewField = datePickerTextView.getText().toString();
 
-        if(emailField.isEmpty() || isValidEmailAddress(emailField)){
-            email.setTextColor(Color.RED);
+        if(emailField.isEmpty() || !isValidEmailAddress(emailField)){
+            signError(email);
             verify = false;
         }
 
         if(passwordField.isEmpty() || passwordField.length() < 8){
-            password.setTextColor(Color.RED);
+            signError(password);
             verify = false;
         }
 
         if(verifyPasswordField.isEmpty() || !verifyPasswordField.equals(passwordField)){
-            verifyPassword.setTextColor(Color.RED);
+            signError(verifyPassword);
             verify = false;
         }
 
-        if(fnameField.isEmpty() || isValidName(fnameField)){
-            fname.setTextColor(Color.RED);
+        if(fnameField.isEmpty() || !isValidName(fnameField)){
+            signError(fname);
             verify = false;
         }
 
-        if(lnameField.isEmpty() || isValidName(lnameField)){
-            lname.setTextColor(Color.RED);
+        if(lnameField.isEmpty() || !isValidName(lnameField)){
+            signError(lname);
             verify = false;
         }
 
-        if(datePickerTextViewField.equals(getResources().getString(R.string.select_date))){
-            datePickerTextView.setTextColor(Color.RED);
+        if(datePickerTextViewField.isEmpty()){
+            datePickerTextView.setHintTextColor(Color.RED);
             verify = false;
         }
 
@@ -213,6 +219,11 @@ public class SignUp extends AppCompatActivity {
             registerButton.setEnabled(true);
         }
         return verify;
+    }
+
+    private void signError(EditText editText) {
+        editText.setTextColor(Color.RED);
+        editText.setBackground(getResources().getDrawable(R.drawable.back_error));
     }
 
     private boolean isValidName(String name) {
