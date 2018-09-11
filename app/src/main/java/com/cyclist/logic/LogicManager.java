@@ -2,9 +2,7 @@ package com.cyclist.logic;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
@@ -28,18 +26,14 @@ import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
 
-import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
-import static com.cyclist.logic.common.Constants.LAT_TAG;
-import static com.cyclist.logic.common.Constants.LONG_TAG;
-
 public class LogicManager {
     private static LogicManager instance = null;
     private Activity mActivity;
     private Context mContext;
     private DBService dbService;
-    private UserService userService = new UserService();
-    private HistoryService historyService = new HistoryService();
-    private ReportService reportService = new ReportService();
+    private UserService userService = UserService.getInstance();
+    private HistoryService historyService = HistoryService.getInstance();
+    private ReportService reportService = ReportService.getInstance();
     private RoadManager roadManager = new MapQuestRoadManager(Constants.MAPQUEST_KEY);
     //roadManager.addRequestOption("routeType=bicycle");
     private LocationManager mLocationManager;
@@ -110,12 +104,14 @@ public class LogicManager {
 
     public boolean saveUser(User user) {
         try {
-            userService.save(user);
+            userService.saveNewUser(user);
         } catch (Exception ex) {
             return false;
         }
         return true;
     }
+
+
 
     public boolean saveReport(Report report) {
         try {
