@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Cyclist</string>
+    <string name="bt_center_map_description">Center Me</string>
     <string name="facebook_app_id">321492028625905</string>
     <string name="fb_login_protocol_scheme">fb321492028625905</string>
     <string name="main_signin_logo">FIND YOUR WAY</string>
