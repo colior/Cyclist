@@ -68,12 +68,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
         registerReceiver(locationReceiver, intentFilter);
+        uiManager.resumeFollowMe();
     }
 
     @Override
     protected void onPause() {
         unregisterReceiver(locationReceiver);
         super.onPause();
+        uiManager.pauseFollowMe();
     }
 
     @Override
@@ -135,4 +137,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
 }
