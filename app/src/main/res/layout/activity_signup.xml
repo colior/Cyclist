@@ -25,7 +25,6 @@
         android:layout_marginBottom="15dp"/>
     <ScrollView
         android:layout_below="@+id/signUp_title"
-        android:layout_above="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -37,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/connection_details"
-                android:gravity="left"
+                android:gravity="start|center"
                 android:textSize="20sp"
                 android:textColor="#ffffff"
                 android:layout_marginBottom="5dp"/>
@@ -57,7 +56,8 @@
                 android:focusable="true"
                 android:singleLine="true"
                 android:imeOptions="actionNext"
-                android:focusableInTouchMode="true" />
+                android:focusableInTouchMode="true"
+                android:gravity="start|center" />
             <EditText
                 android:id="@+id/password"
                 android:inputType="textPassword"
@@ -74,7 +74,8 @@
                 android:focusable="true"
                 android:singleLine="true"
                 android:imeOptions="actionNext"
-                android:focusableInTouchMode="true"/>
+                android:focusableInTouchMode="true"
+                android:gravity="start|center" />
             <EditText
                 android:id="@+id/verifyPassword"
                 android:inputType="textPassword"
@@ -92,13 +93,13 @@
                 android:singleLine="true"
                 android:imeOptions="actionNext"
                 android:focusableInTouchMode="true"
-                />
+                android:gravity="start|center" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/about_you"
-                android:gravity="left"
+                android:gravity="start|center"
                 android:textSize="20sp"
                 android:textColor="#ffffff"
                 android:layout_marginBottom="5dp"/>
@@ -119,7 +120,8 @@
                 android:focusable="true"
                 android:singleLine="true"
                 android:imeOptions="actionNext"
-                android:focusableInTouchMode="true" />
+                android:focusableInTouchMode="true"
+                android:gravity="start|center" />
 
             <EditText
                 android:id="@+id/lastName"
@@ -137,14 +139,15 @@
                 android:focusable="true"
                 android:singleLine="true"
                 android:imeOptions="actionDone"
-                android:focusableInTouchMode="true" />
+                android:focusableInTouchMode="true"
+                android:gravity="start|center" />
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/birthday"
-                android:gravity="left"
+                android:gravity="start|center"
                 android:textSize="20sp"
                 android:textColor="#ffffff"
                 android:layout_marginBottom="5dp"/>
@@ -164,7 +167,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/ride"
-                android:gravity="left"
+                android:gravity="start|center"
                 android:textSize="20sp"
                 android:textColor="#ffffff"
                 android:layout_marginBottom="5dp"
@@ -186,17 +189,16 @@
                     android:imeOptions="actionDone"
                     android:layout_marginBottom="10dp"/>
             </LinearLayout>
+            <Button
+                android:id="@+id/registerButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/back"
+                android:text="@string/register"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
         </LinearLayout>
     </ScrollView>
-    <Button
-        android:layout_alignParentBottom="true"
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/back"
-        android:text="@string/register"
-        android:textAllCaps="false"
-        android:textColor="#ffffff"
-        android:textSize="15sp" />
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package com.cyclist.logic.history;
+package com.cyclist.logic.models;
 
 import java.util.Date;
 

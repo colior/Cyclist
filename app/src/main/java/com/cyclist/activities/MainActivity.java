@@ -1,41 +1,54 @@
 package com.cyclist.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.cyclist.R;
 import com.cyclist.UI.UIManager;
 import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
 import com.cyclist.logic.LogicManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.cyclist.logic.models.User;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.views.MapView;
 
-import static android.content.ContentValues.TAG;
+import java.util.Objects;
+
 import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
+    private FirebaseUser firebaseUser;
     private MapView mapView;
+    private TextView usernameTextView;
     private ImageButton centerMeBtn;
+    private ImageButton searchButton;
+    private ImageButton settingsButton;
+    private ImageButton logoutButton;
+    private ImageButton closeSearchBtn;
+    private FrameLayout searchLayout;
     private UIManager uiManager;
     private LogicManager logicManager = LogicManager.getInstance();
     private LocationReceiver locationReceiver = new LocationReceiver();
     private IntentFilter intentFilter;
+    private Animation animUp;
+    private Animation animDown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +71,99 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         startService(new Intent(this, FollowLocationService.class));
 
+        animUp = AnimationUtils.loadAnimation(this, R.anim.anim_up);
+        animDown = AnimationUtils.loadAnimation(this, R.anim.anim_down);
+        closeSearchBtn = findViewById(R.id.closeSearchBtn);
+        searchLayout = findViewById(R.id.searchSlider);
+        searchButton = findViewById(R.id.searchBtn);
+        usernameTextView = findViewById(R.id.usernameTextView);
         mapView = findViewById(R.id.map);
         centerMeBtn = findViewById(R.id.centerLocationBtn);
-        centerMeBtn.setOnClickListener(this);
+        logoutButton = findViewById(R.id.logoutBtn);
+        settingsButton = findViewById(R.id.settingsBtn);
         uiManager.setMap(mapView);
+        searchLayout.setVisibility(View.GONE);
+        firebaseUser = logicManager.getCurrentUser();
+        usernameTextView.setText(logicManager.getUser().getFName());
+
+
+        initializeListeners();
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void initializeListeners() {
+        centerMeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()) {
+                    case R.id.centerLocationBtn:
+                        uiManager.handleCenterMapClick();
+                        break;
+                }
+            }
+        });
+
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logicManager.getAuth().signOut();
+                LoginManager.getInstance().logOut();
+                if(logicManager.getMGoogleSignInClient() != null) {
+                    logicManager.getMGoogleSignInClient().signOut();
+                }
+                Intent loginActivity = new Intent(MainActivity.this, SignIn.class);
+                startActivity(loginActivity);
+                finish();
+            }
+        });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSearchBar();
+            }
+        });
+
+        closeSearchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideSearchBar();
+            }
+        });
+
+        searchLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                float startY = 0;
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    float endY = event.getY();
+                    if (endY < startY) {
+                        hideSearchBar();
+                    }
+                }
+                return true;
+            }
+        });
+    }
+
+    private void showSearchBar() {
+        searchLayout.setVisibility(View.VISIBLE);
+        searchLayout.startAnimation(animUp);
+    }
+
+    private void hideSearchBar() {
+        searchLayout.setVisibility(View.GONE);
+        searchLayout.startAnimation(animDown);
+        ((InputMethodManager) Objects.requireNonNull(getSystemService(Context.INPUT_METHOD_SERVICE)))
+                .hideSoftInputFromWindow(findViewById(R.id.mainLayout)
+                        .getWindowToken(), 0);
     }
 
     @Override
@@ -82,22 +184,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser;
-        if((currentUser = logicManager.getCurrentUser()) != null){
-            updateUI(currentUser);
+        if (logicManager.getCurrentUser() != null) {
+            updateUI();
         }
     }
 
     //TODO: update UI while there is user connected
-    private void updateUI(FirebaseUser currentUser) {
+    private void updateUI() {
     }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.centerLocationBtn:
-                uiManager.handleCenterMapClick();
-                break;
-        }
-    }
-
 }

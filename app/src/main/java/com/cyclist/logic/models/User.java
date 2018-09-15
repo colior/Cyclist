@@ -1,4 +1,4 @@
-package com.cyclist.logic.user;
+package com.cyclist.logic.models;
 
 import java.util.Date;
 import java.util.LinkedList;

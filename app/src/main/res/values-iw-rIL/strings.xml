@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="signup">הירשם</string>
+    <string name="login">התחבר</string>
+    <string name="email">אימייל</string>
+    <string name="password">סיסמא</string>
+    <string name="verify_password">ודא סיסמא</string>
+    <string name="connection_details">פרטי התחברות:</string>
+    <string name="about_you">קצת עלייך:</string>
+    <string name="birthday">תאריך לידה:</string>
+    <string name="select_date">בחר תאריך</string>
+    <string name="ride">כלי רכב:</string>
+    <string name="first_name">שם פרטי</string>
+    <string name="last_name">שם משפחה</string>
+    <string name="failed_to_sign_in">התחברות נכשלה</string>
+    <string name="register">הרשמה</string>
+    <string name="loginCanceled">התחברות בוטלה</string>
+    <string name="errorOccurred">קרתה שגיאה</string>
+    <string name="error_sign_in_already_exist">אימייל כבר קיים</string>
+    <string name="error_sign_in_failed">הזדהות נכשלה</string>
+    <string name="search">חפש</string>
+    <string name="where_are_you_riding_to">לאן אתה נוסע?</string>
+    <string name="bt_center_map_description">מרכז אותי</string>
+</resources>
