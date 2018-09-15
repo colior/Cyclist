@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Cyclist</string>
+    <string name="app_name" translatable="false">Cyclist</string>
     <string name="bt_center_map_description">Center Me</string>
-    <string name="facebook_app_id">321492028625905</string>
-    <string name="fb_login_protocol_scheme">fb321492028625905</string>
-    <string name="main_signin_logo">FIND YOUR WAY</string>
-    <string name="sub_signin_logo">CYCLIST WAY</string>
+    <string name="facebook_app_id" translatable="false">321492028625905</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb321492028625905</string>
+    <string name="main_signin_logo" translatable="false">FIND YOUR WAY</string>
+    <string name="sub_signin_logo" translatable="false">CYCLIST WAY</string>
     <string name="signup">Sign Up</string>
     <string name="login">Login</string>
     <string name="email">Email</string>
@@ -20,8 +20,10 @@
     <string name="failed_to_sign_in">Sign in failed</string>
     <string name="register">Register</string>
 
-    <string name="startChar">a</string>
-    <string name="endChar">z</string>
+    <string name="loginCanceled">Login Canceled</string>
+    <string name="errorOccurred">Error Occurred</string>
+    <string name="startChar" translatable="false">a</string>
+    <string name="endChar" translatable="false">z</string>
 
     <string name="error_sign_in_already_exist">Email is already exist</string>
     <string name="error_sign_in_failed">Authentication failed</string>
@@ -32,4 +34,7 @@
         <item>Electric Scooter</item>
         <item>Segway</item>
     </string-array>
+
+    <string name="search">Search</string>
+    <string name="where_are_you_riding_to">Where are you riding to?</string>
 </resources>

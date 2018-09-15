@@ -1,4 +1,4 @@
-package com.cyclist.logic.report;
+package com.cyclist.logic.models;
 
 import java.util.Date;
 

@@ -10,14 +10,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.cyclist.UI.OnLocationChanged;
+import com.cyclist.activities.SignIn;
 import com.cyclist.logic.common.Constants;
 import com.cyclist.logic.firebase.DBService;
-import com.cyclist.logic.history.History;
-import com.cyclist.logic.history.HistoryService;
-import com.cyclist.logic.report.Report;
-import com.cyclist.logic.report.ReportService;
-import com.cyclist.logic.user.User;
-import com.cyclist.logic.user.UserService;
+import com.cyclist.logic.models.History;
+import com.cyclist.logic.models.Report;
+import com.cyclist.logic.models.User;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -26,22 +25,31 @@ import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import static com.cyclist.logic.common.Constants.HISTORY_BUCKET;
+import static com.cyclist.logic.common.Constants.REPORTS_BUCKET;
+
 public class LogicManager {
     private static LogicManager instance = null;
     private Activity mActivity;
     private Context mContext;
     private DBService dbService;
-    private UserService userService = UserService.getInstance();
-    private HistoryService historyService = HistoryService.getInstance();
-    private ReportService reportService = ReportService.getInstance();
     private RoadManager roadManager = new MapQuestRoadManager(Constants.MAPQUEST_KEY);
     //roadManager.addRequestOption("routeType=bicycle");
     private LocationManager mLocationManager;
+    @Setter @Getter
+    private GoogleSignInClient mGoogleSignInClient;
     private GeoPoint currentLocation;
     private OnLocationChanged listener;
+    @Getter
+    private User user;
+    @Setter
+    private SignIn signIn;
 
     private LogicManager() {
-        dbService = DBService.getInstance();
+        dbService = new DBService(this);
     }
 
     public static LogicManager getInstance() {
@@ -54,6 +62,17 @@ public class LogicManager {
             }
         }
         return instance;
+    }
+
+    public void setUser(User user){
+        this.user = user;
+        if(user != null) {
+            signIn.onUserSignedIn();
+        }
+    }
+
+    public void connect(){
+        dbService.getUser();
     }
 
     public void initAndAskPermissions(Activity activity) {
@@ -98,13 +117,10 @@ public class LogicManager {
         return dbService.getMAuth();
     }
 
-    public FirebaseUser getCurrentUser() {
-        return dbService.getCurrentUser();
-    }
 
     public boolean saveUser(User user) {
         try {
-            userService.saveNewUser(user);
+            dbService.saveNewUser(user);
         } catch (Exception ex) {
             return false;
         }
@@ -112,10 +128,9 @@ public class LogicManager {
     }
 
 
-
     public boolean saveReport(Report report) {
         try {
-            reportService.save(report);
+            dbService.save(report, REPORTS_BUCKET);
         } catch (Exception ex) {
             return false;
         }
@@ -124,7 +139,7 @@ public class LogicManager {
 
     public boolean saveHistory(History history) {
         try {
-            historyService.save(history);
+            dbService.save(history, HISTORY_BUCKET);
         } catch (Exception ex) {
             return false;
         }
@@ -133,6 +148,10 @@ public class LogicManager {
 
     public OnLocationChanged getOnLocationChangedListener() {
         return listener;
+    }
+
+    public FirebaseUser getCurrentUser() {
+        return dbService.getCurrentUser();
     }
 }
 

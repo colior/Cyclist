@@ -82,7 +82,8 @@
                     android:paddingRight="10dp"
                     android:singleLine="true"
                     android:textColor="#ffffff"
-                    android:textColorHint="#ffffff" />
+                    android:textColorHint="#ffffff"
+                    android:gravity="start|center" />
 
                 <EditText
                     android:id="@+id/passwordEditText"
@@ -97,7 +98,8 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:textColor="#ffffff"
-                    android:textColorHint="#ffffff" />
+                    android:textColorHint="#ffffff"
+                    android:gravity="start|center" />
 
                 <Button
                     android:id="@+id/signInButton"

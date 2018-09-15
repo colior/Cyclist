@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.cyclist.R;
 import com.cyclist.logic.LogicManager;
-import com.cyclist.logic.user.User;
+import com.cyclist.logic.models.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,6 +33,9 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.Date;
+import java.util.Map;
+
 import static android.content.ContentValues.TAG;
 
 public class SignIn extends AppCompatActivity implements View.OnClickListener {
@@ -42,9 +45,10 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     private LogicManager logicManager = LogicManager.getInstance();
     private EditText username;
     private EditText password;
+    private Button signUpButton;
+    private Button signInButton;
     private LoginButton facebookLoginButton;
     private CallbackManager facebookCallbackManager;
-
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -55,24 +59,25 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         initializeComponents();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser;
-        if ((currentUser = logicManager.getCurrentUser()) != null) {
-            goToMainActivity(currentUser);
-        }
-        else{
-            checkFacebookLoginStatus();
-        }
+
+    public void onUserSignedIn(){
+        goToMainActivity();
     }
 
     private void initializeComponents() {
+        logicManager.setSignIn(this);
         username = findViewById(R.id.usernameEditText);
         password = findViewById(R.id.passwordEditText);
-        Button signUpButton = findViewById(R.id.signUpButton);
-        Button signInButton = findViewById(R.id.signInButton);
+        signUpButton = findViewById(R.id.signUpButton);
+        signInButton = findViewById(R.id.signInButton);
         facebookLoginButton = findViewById(R.id.facebook_login_button);
+
+        initializeListeners();
+        initializeFacebookSingIn();
+        initializeGoogleSingIn();
+    }
+
+    private void initializeListeners() {
         username.setOnFocusChangeListener(new View.OnFocusChangeListener(){
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -85,8 +90,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 onTextEditFocus(password, hasFocus);
             }
         });
-        initializeFacebookSingIn();
-        initializeGoogleSingIn();
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +97,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 onSignInButtonClick(v);
             }
         });
-
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,25 +128,25 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-                            goToMainActivity(logicManager.getAuth().getCurrentUser());
+                            logicManager.connect();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignIn.this, getResources().getString(R.string.error_sign_in_failed),
-                                    Toast.LENGTH_SHORT).show();
-                            updateFailure("");
+                            updateFailure(getResources().getString(R.string.error_sign_in_failed));
                         }
                     }
                 });
     }
 
     private void updateFailure(String errorMsg) {
-
+        Toast.makeText(SignIn.this, errorMsg,
+                Toast.LENGTH_SHORT).show();
     }
 
-    private void goToMainActivity(FirebaseUser user) {
-//        Intent mainActivityIntent = new Intent(SignIn.this, MainActivity.class);
-//        startActivity(mainActivityIntent);
+    private void goToMainActivity() {
+            Intent mainActivityIntent = new Intent(SignIn.this, MainActivity.class);
+            startActivity(mainActivityIntent);
+            finish();
     }
 
     public void onSignInButtonClick(View view) {
@@ -153,16 +155,37 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    private User createUser(){
-        FirebaseUser firebaseUser = logicManager.getCurrentUser();
+    private User createUserFromFacebook(AuthResult result){
+        Map<String, Object> profile = result.getAdditionalUserInfo().getProfile();
         User user = new User();
-        user.setEmail(firebaseUser.getEmail());
-        user.setFName(firebaseUser.getDisplayName());
+        user.setBirthday(stringToDate((String) profile.get("birthday")));
+        user.setEmail((String) profile.get("email"));
+        user.setFName((String) profile.get("first_name"));
+        user.setLName((String) profile.get("last_name"));
+        user.setRideType(User.RideType.BIKE);
         return user;
-
     }
 
-/******************************************* GOOGLE *******************************************/
+    private User createUserFromGoogle(AuthResult result){
+        Map<String, Object> profile = result.getAdditionalUserInfo().getProfile();
+        User user = new User();
+        user.setEmail((String) profile.get("email"));
+        user.setFName((String) profile.get("given_name"));
+        user.setLName((String) profile.get("family_name"));
+        user.setRideType(User.RideType.BIKE);
+        return user;
+    }
+
+    private Date stringToDate(String birthday) {
+        Date date = new Date();
+        String[] parts = birthday.split("/");
+        date.setMonth(Integer.parseInt(parts[0]) - 1);
+        date.setDate(Integer.parseInt(parts[1]));
+        date.setYear(Integer.parseInt(parts[2]));
+        return date;
+    }
+
+    /******************************************* GOOGLE *******************************************/
 
     @Override
     public void onClick(View v) {
@@ -188,20 +211,11 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
-                // [START_EXCLUDE]
-                updateFailure("");
-                // [END_EXCLUDE]
+                updateFailure(getResources().getString(R.string.errorOccurred));
             }
         }
         else{
             facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    private void checkGoogleLoginStatus() {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if(account != null){
-            firebaseAuthWithGoogle(account);
         }
     }
 
@@ -212,6 +226,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        logicManager.setMGoogleSignInClient(mGoogleSignInClient);
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -225,12 +240,11 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                           logicManager.saveUser(createUser());
-                            goToMainActivity(logicManager.getAuth().getCurrentUser());
+                            logicManager.saveUser(createUserFromGoogle(task.getResult()));
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            updateFailure("");
+                            updateFailure(getResources().getString(R.string.errorOccurred));
                         }
                     }
                 });
@@ -238,17 +252,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
 
     /******************************************* FACEBOOK *******************************************/
-
-    private void checkFacebookLoginStatus() {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if (accessToken != null && !accessToken.isExpired()) {
-            handleFacebookAccessToken(accessToken);
-        }
-        else {
-            checkGoogleLoginStatus();
-        }
-
-    }
 
     private void initializeFacebookSingIn() {
         facebookCallbackManager = CallbackManager.Factory.create();
@@ -266,12 +269,12 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
             @Override
             public void onCancel() {
-                updateFailure("");
+                updateFailure(getResources().getString(R.string.loginCanceled));
             }
 
             @Override
             public void onError(FacebookException exception) {
-                updateFailure("");
+                updateFailure(getResources().getString(R.string.errorOccurred));
             }
         });
     }
@@ -287,14 +290,11 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            logicManager.saveUser(createUser());
-                            goToMainActivity(logicManager.getAuth().getCurrentUser());
+                            logicManager.saveUser(createUserFromFacebook(task.getResult()));
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(SignIn.this, getResources().getString(R.string.error_sign_in_already_exist),
-                                    Toast.LENGTH_SHORT).show();
-                            updateFailure("");
+                            updateFailure(getResources().getString(R.string.errorOccurred));
                         }
                     }
                 });
