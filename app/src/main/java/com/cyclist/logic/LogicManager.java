@@ -23,8 +23,13 @@ import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
+import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Polyline;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LogicManager {
     private static LogicManager instance = null;
@@ -35,13 +40,12 @@ public class LogicManager {
     private HistoryService historyService = HistoryService.getInstance();
     private ReportService reportService = ReportService.getInstance();
     private RoadManager roadManager = new MapQuestRoadManager(Constants.MAPQUEST_KEY);
-    //roadManager.addRequestOption("routeType=bicycle");
-    private LocationManager mLocationManager;
     private GeoPoint currentLocation;
     private OnLocationChanged listener;
 
     private LogicManager() {
         dbService = DBService.getInstance();
+        roadManager.addRequestOption(Constants.CYCLEWAY_TAG);
     }
 
     public static LogicManager getInstance() {
@@ -133,6 +137,10 @@ public class LogicManager {
 
     public OnLocationChanged getOnLocationChangedListener() {
         return listener;
+    }
+
+    public RoadManager getRoadManger() {
+        return roadManager;
     }
 }
 

@@ -2,20 +2,22 @@ package com.cyclist.UI;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
+import android.widget.Toast;
 
 import com.cyclist.R;
 import com.cyclist.logic.LogicManager;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.routing.RoadNode;
 import org.osmdroid.tileprovider.tilesource.ThunderforestTileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
@@ -25,7 +27,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import static org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK;
 
 public class UIManager implements OnCenterMeClick, OnLocationChanged {
-
 
     private Context mContext;
     private MapView map;
@@ -44,13 +45,14 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
         if (ThunderforestTileSource.haveMapId(mContext)) {
             ThunderforestTileSource tileSource = new ThunderforestTileSource(mContext, ThunderforestTileSource.CYCLE);
             TileSourceFactory.addTileSource(tileSource);
+            map.setTileSource(TileSourceFactory.getTileSource(ThunderforestTileSource.mapName(ThunderforestTileSource.CYCLE)));
+        } else {
+            map.setTileSource(MAPNIK);
         }
         initMap();
     }
 
-    private void initMap(){
-        map.setTileSource(TileSourceFactory.getTileSource(ThunderforestTileSource.mapName(ThunderforestTileSource.CYCLE)));
-        //map.setBuiltInZoomControls(true);
+    private void initMap() {
         map.setTilesScaledToDpi(true);
         map.setFlingEnabled(true);
         map.setMultiTouchControls(true);
@@ -85,7 +87,7 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
         myLocationOverlay.enableFollowLocation();
         myLocationOverlay.setOptionsMenuEnabled(true);
         myLocationOverlay.setPersonIcon(drawableToBitmap(mContext.getResources().getDrawable(R.drawable.blue_dot)));
-        myLocationOverlay.setPersonHotspot(1, 1);
+        //myLocationOverlay.setPersonHotspot(1, 1);
         myLocationOverlay.enableMyLocation();
     }
 
@@ -122,5 +124,23 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    public void drawRoute(Polyline route) {
+        map.getOverlays().add(route);
+        map.invalidate();
+    }
+
+    public void addReport(GeoPoint location, String reportTitle) {
+        Drawable nodeIcon = mContext.getResources().getDrawable(R.mipmap.marker_node);
+        Marker nodeMarker = new Marker(map);
+        nodeMarker.setPosition(location);
+        nodeMarker.setIcon(nodeIcon);
+        nodeMarker.setTitle(reportTitle);
+        map.getOverlays().add(nodeMarker);
+    }
+
+    public void showErrorMsg(String msg) {
+        Toast.makeText(map.getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }
