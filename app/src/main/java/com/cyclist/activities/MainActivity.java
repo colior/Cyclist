@@ -61,9 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter intentFilter;
     private Animation animUp;
     private Animation animDown;
-
-    private Button searchBtn;
-    private EditText addressEditText;
     private String destination;
 
     @Override
@@ -114,25 +111,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlaceSelected(Place place) {
                 destination = place.getName().toString();
-                addressEditText.setText(place.getAddress().toString());
-
-                //TODO: Decide how to get an address
-                //(By clicking on Search or by clicking on option from the AutoComplete offers)
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-            }
-        });
-
-        searchBtn = findViewById(R.id.searchAddressBtn);
-        addressEditText = findViewById(R.id.addressEditText);
-
-        searchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String addressStr = addressEditText.getText().toString();
+                String addressStr = place.getAddress().toString();
                 if((addressStr != null) && !(addressStr.equals(""))){
                     List<Address> addressList = null;
                     Geocoder geocoder = new Geocoder(MainActivity.this);
@@ -144,8 +123,13 @@ public class MainActivity extends AppCompatActivity {
                     Address address = addressList.get(0);
                     GeoPoint addressGeoPoint = new GeoPoint(address.getLatitude(),address.getLongitude());
 
-                    //TODO: send to navigate
+                    //TODO: send to Ben
                 }
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
             }
         });
     }
