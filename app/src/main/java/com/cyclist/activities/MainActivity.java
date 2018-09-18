@@ -4,14 +4,19 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -23,11 +28,18 @@ import com.cyclist.logic.LocationReceiver;
 import com.cyclist.logic.LogicManager;
 import com.cyclist.logic.models.User;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
@@ -49,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter intentFilter;
     private Animation animUp;
     private Animation animDown;
+    private String destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +99,39 @@ public class MainActivity extends AppCompatActivity {
         firebaseUser = logicManager.getCurrentUser();
         usernameTextView.setText(logicManager.getUser().getFName());
 
-
+        initializeSearchAddressComponents();
         initializeListeners();
+    }
+
+    private void initializeSearchAddressComponents() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                destination = place.getName().toString();
+                String addressStr = place.getAddress().toString();
+                if((addressStr != null) && !(addressStr.equals(""))){
+                    List<Address> addressList = null;
+                    Geocoder geocoder = new Geocoder(MainActivity.this);
+                    try {
+                        addressList = geocoder.getFromLocationName(addressStr , 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Address address = addressList.get(0);
+                    GeoPoint addressGeoPoint = new GeoPoint(address.getLatitude(),address.getLongitude());
+
+                    //TODO: send to Ben
+                }
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+            }
+        });
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -94,30 +94,19 @@
                     android:background="@color/settingsBackground"
                     android:src="@drawable/logout" />
 
-                <EditText
-                    android:id="@+id/addressEditText"
+                <android.support.v7.widget.CardView
+                    android:id="@+id/addressCardView"
+                    android:layout_below="@id/usernameTextView"
                     android:layout_width="match_parent"
-                    android:layout_below="@+id/settingsBtn"
-                    android:layout_toStartOf="@+id/searchAddressBtn"
-                    android:layout_height="50dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="10dp"
-                    android:hint="@string/where_are_you_riding_to"/>
-
-                <Button
-                    android:id="@+id/searchAddressBtn"
-                    android:layout_below="@+id/settingsBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/search"
-                    android:textAllCaps="false" />
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20sp">
+                    <fragment
+                        android:id="@+id/place_autocomplete_fragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+                        />
+                    </android.support.v7.widget.CardView>
 
             </RelativeLayout>
 
