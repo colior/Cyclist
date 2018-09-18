@@ -3,9 +3,12 @@ package com.cyclist.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,13 +20,20 @@ import com.cyclist.UI.UIManager;
 import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
 import com.cyclist.logic.LogicManager;
+import com.cyclist.logic.RoutePoints;
+import com.cyclist.logic.getRoadAsync;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.ContentValues.TAG;
 import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
@@ -40,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         logicManager.initAndAskPermissions(this);
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -62,6 +73,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         centerMeBtn = findViewById(R.id.centerLocationBtn);
         centerMeBtn.setOnClickListener(this);
         uiManager.setMap(mapView);
+
+        GeoPoint start = new GeoPoint(32.070122d, 34.771721d);
+        GeoPoint end = new GeoPoint(32.047532d, 34.759606d);
+        ArrayList<GeoPoint> points = new ArrayList();
+        points.add(start);
+        points.add(end);
+        RoutePoints routePoints = new RoutePoints(points);
+        new getRoadAsync(uiManager, ContextCompat.getColor(this, R.color.colorRoute)).execute(routePoints);
+        uiManager.addReport(start, "this is the start point");
     }
 
     @Override
