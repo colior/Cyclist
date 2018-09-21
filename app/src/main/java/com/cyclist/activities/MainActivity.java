@@ -8,15 +8,13 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -26,7 +24,8 @@ import com.cyclist.UI.UIManager;
 import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
 import com.cyclist.logic.LogicManager;
-import com.cyclist.logic.models.User;
+import com.cyclist.logic.RoutePoints;
+import com.cyclist.logic.getRoadAsync;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
@@ -39,6 +38,7 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         logicManager.initAndAskPermissions(this);
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -92,12 +93,22 @@ public class MainActivity extends AppCompatActivity {
         usernameTextView = findViewById(R.id.usernameTextView);
         mapView = findViewById(R.id.map);
         centerMeBtn = findViewById(R.id.centerLocationBtn);
+        centerMeBtn.setOnClickListener(this);
         logoutButton = findViewById(R.id.logoutBtn);
         settingsButton = findViewById(R.id.settingsBtn);
         uiManager.setMap(mapView);
         searchLayout.setVisibility(View.GONE);
         firebaseUser = logicManager.getCurrentUser();
         usernameTextView.setText(logicManager.getUser().getFName());
+
+        GeoPoint start = new GeoPoint(32.070122d, 34.771721d);
+        GeoPoint end = new GeoPoint(32.047532d, 34.759606d);
+        ArrayList<GeoPoint> points = new ArrayList();
+        points.add(start);
+        points.add(end);
+        RoutePoints routePoints = new RoutePoints(points);
+        new getRoadAsync(uiManager, ContextCompat.getColor(this, R.color.colorRoute)).execute(routePoints);
+        uiManager.addReport(start, "this is the start point");
 
         initializeSearchAddressComponents();
         initializeListeners();
@@ -236,4 +247,5 @@ public class MainActivity extends AppCompatActivity {
     //TODO: update UI while there is user connected
     private void updateUI() {
     }
+
 }

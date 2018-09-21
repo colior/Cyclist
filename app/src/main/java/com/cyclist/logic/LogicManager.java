@@ -50,6 +50,7 @@ public class LogicManager {
 
     private LogicManager() {
         dbService = new DBService(this);
+        roadManager.addRequestOption(Constants.CYCLEWAY_TAG);
     }
 
     public static LogicManager getInstance() {
@@ -152,6 +153,10 @@ public class LogicManager {
 
     public FirebaseUser getCurrentUser() {
         return dbService.getCurrentUser();
+    }
+
+    public RoadManager getRoadManger() {
+        return roadManager;
     }
 }
 
