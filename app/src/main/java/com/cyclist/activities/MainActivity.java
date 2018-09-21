@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         usernameTextView = findViewById(R.id.usernameTextView);
         mapView = findViewById(R.id.map);
         centerMeBtn = findViewById(R.id.centerLocationBtn);
-        centerMeBtn.setOnClickListener(this);
         logoutButton = findViewById(R.id.logoutBtn);
         settingsButton = findViewById(R.id.settingsBtn);
         uiManager.setMap(mapView);
