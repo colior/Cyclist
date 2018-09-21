@@ -118,4 +118,29 @@
         </LinearLayout>
     </FrameLayout>
 
+    <RelativeLayout
+        android:id="@+id/settingsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/settingsBackground">
+        <TextView
+            android:id="@+id/topLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/bottom_line"/>
+
+        <RelativeLayout
+            android:layout_below="@+id/topLabel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </RelativeLayout>
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>
