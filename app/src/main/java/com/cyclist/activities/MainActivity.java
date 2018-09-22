@@ -255,8 +255,5 @@ public class MainActivity extends AppCompatActivity {
             settingsLayout.startAnimation(settingsDown);
             isSettingsOpen = false;
         }
-        else {
-            super.onBackPressed();
-        }
     }
 }
