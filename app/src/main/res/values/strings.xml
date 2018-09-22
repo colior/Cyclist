@@ -37,4 +37,6 @@
 
     <string name="search">Search</string>
     <string name="where_are_you_riding_to">Where are you riding to?</string>
+
+    <string name="settings">Settings</string>
 </resources>

@@ -15,24 +15,24 @@ public class User {
 
     public enum RideType
     {
-        BIKE("Bicycle"),
-        ELECTRIC_BIKE("Electric Bicycle"),
-        ELECTRIC_SCOOTER("Electric Scooter"),
-        SEGWAY("Segway");
+        BIKE(0),
+        ELECTRIC_BIKE(1),
+        ELECTRIC_SCOOTER(2),
+        SEGWAY(3);
 
-        private String displayName;
+        private int position;
 
-        RideType(String displayName){
-            this.displayName = displayName;
+        RideType(int position){
+            this.position = position;
         }
 
-        public String getValue() {
-            return displayName;
+        public int getValue() {
+            return position;
         }
 
-        public static RideType getByDisplayName(String displayName){
+        public static RideType getByPosition(int position){
             for(RideType rideType : RideType.values()){
-                if(rideType.getValue().equals(displayName)){
+                if(rideType.getValue() == position){
                     return rideType;
                 }
             }
