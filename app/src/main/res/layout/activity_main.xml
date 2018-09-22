@@ -79,16 +79,15 @@
                     android:layout_alignTop="@+id/settingsBtn"
                     android:layout_centerHorizontal="true"
                     android:gravity="center"
-                    android:hint="username"
                     android:textSize="25sp"
                     android:textStyle="bold" />
 
                 <ImageButton
                     android:id="@+id/logoutBtn"
-                    android:layout_width="40dp"
+                    android:layout_width="50dp"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="10dp"
+                    android:paddingEnd="10dp"
                     android:layout_marginStart="11dp"
                     android:layout_marginTop="10dp"
                     android:background="@color/settingsBackground"
@@ -135,12 +134,106 @@
             android:paddingBottom="10dp"
             android:background="@drawable/bottom_line"/>
 
-        <RelativeLayout
-            android:layout_below="@+id/topLabel"
+        <ScrollView
+            android:layout_below="@id/topLabel"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/roadTypeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/road_type"
+                    android:textStyle="bold"
+                    android:textSize="25sp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"/>
+                <RadioGroup
+                    android:id="@+id/roadTypes"
+                    android:layout_below="@id/roadTypeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp">
+                    <!--<RadioButton-->
+                        <!--android:id="@+id/bikeTrailButton"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="@string/bicycle_trail"-->
+                        <!--android:layout_marginStart="20dp" />-->
+                    <!--<RadioButton-->
+                        <!--android:id="@+id/sidewalkButton"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="@string/sidewalk"-->
+                        <!--android:layout_marginStart="20dp" />-->
+                    <!--<RadioButton-->
+                        <!--android:id="@+id/roadButton"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="@string/road"-->
+                        <!--android:layout_marginStart="20dp" />-->
+                </RadioGroup>
 
-        </RelativeLayout>
+                <TextView
+                    android:layout_marginStart="10dp"
+                    android:layout_below="@+id/roadTypes"
+                    android:id="@+id/routeMethodText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/route_method"
+                    android:textStyle="bold"
+                    android:textSize="25sp"
+                    android:layout_marginTop="10dp"/>
+                <RadioGroup
+                    android:id="@+id/routeMethods"
+                    android:layout_below="@id/routeMethodText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp">
+                    <!--<RadioButton-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="@string/safest"-->
+                        <!--android:layout_marginStart="20dp" />-->
+                    <!--<RadioButton-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="@string/fastest"-->
+                        <!--android:layout_marginStart="20dp" />-->
+                </RadioGroup>
+                <TextView
+                    android:layout_marginStart="10dp"
+                    android:layout_below="@+id/routeMethods"
+                    android:id="@+id/rideTypeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/ride_type"
+                    android:textStyle="bold"
+                    android:textSize="25sp"
+                    android:layout_marginTop="10dp"/>
+                <RadioGroup
+                    android:id="@+id/ridesTypes"
+                    android:layout_below="@id/rideTypeText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp">
+                </RadioGroup>
+            </RelativeLayout>
+        </ScrollView>
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
