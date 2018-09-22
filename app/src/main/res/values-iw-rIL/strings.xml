@@ -22,4 +22,12 @@
     <string name="where_are_you_riding_to">לאן אתה נוסע?</string>
     <string name="bt_center_map_description">מרכז אותי</string>
     <string name="settings">הגדרות</string>
+
+    <string-array name="rides">
+        <item>אופניים</item>
+        <item>אופניים חשמליים</item>
+        <item>קורקינט חשמלי</item>
+        <item>סגווי</item>
+    </string-array>
+
 </resources>
