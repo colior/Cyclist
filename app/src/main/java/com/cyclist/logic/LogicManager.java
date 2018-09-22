@@ -13,6 +13,8 @@ import com.cyclist.UI.OnLocationChanged;
 import com.cyclist.activities.MainActivity;
 import com.cyclist.activities.SignIn;
 import com.cyclist.logic.common.Constants;
+import com.cyclist.logic.models.UserSettings;
+import com.cyclist.logic.search.Profile;
 import com.cyclist.logic.storage.firebase.DBService;
 import com.cyclist.logic.models.History;
 import com.cyclist.logic.models.Report;
@@ -32,6 +34,7 @@ import lombok.Setter;
 
 import static com.cyclist.logic.common.Constants.HISTORY_BUCKET;
 import static com.cyclist.logic.common.Constants.REPORTS_BUCKET;
+import static com.cyclist.logic.common.Constants.USERS_BUCKET;
 
 public class LogicManager {
     private static LogicManager instance = null;
@@ -50,10 +53,28 @@ public class LogicManager {
     private User user;
     @Setter
     private SignIn signIn;
+    UserSettings userSettings;
 
     private LogicManager() {
         dbService = new DBService(this);
         localStorageManager = new LocalStorageManager();
+    }
+
+    public UserSettings getUserSettings(Context context) {
+        userSettings = localStorageManager.readSettings(context, getAuth().getUid());
+        if(userSettings == null) {
+            userSettings = new UserSettings(user.getRideType(), Profile.RoadType.CYCLEWAY, Profile.RouteMethod.SAFEST);
+        }
+        return userSettings;
+    }
+
+    public void setUserSettings(UserSettings userSettings ,Context context){
+        this.userSettings = userSettings;
+        localStorageManager.saveSettings(userSettings, getAuth().getUid(), context);
+        if(!userSettings.getRideType().equals(user.getRideType())){
+            user.setRideType(userSettings.getRideType());
+            dbService.save(user, USERS_BUCKET, getAuth().getUid());
+        }
     }
 
     public static LogicManager getInstance() {

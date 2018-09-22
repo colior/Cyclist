@@ -3,6 +3,7 @@ package com.cyclist.logic.storage.local;
 import android.content.Context;
 
 import com.cyclist.logic.models.History;
+import com.cyclist.logic.models.UserSettings;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,7 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LocalStorageManager {
 
-    private static final String searchHistory = "SearchHistory";
+    private static final String SEARCH_HISTORY = "SearchHistory";
+    private static final String USER_SETTINGS = "UserSettings";
     private static final int MAX_HISTORY_NUMBER = 10;
 
     public void saveHistory(History history, Context context){
@@ -31,7 +33,7 @@ public class LocalStorageManager {
         }
 
         try {
-            fileOutputStream = context.openFileOutput(searchHistory, Context.MODE_PRIVATE);
+            fileOutputStream = context.openFileOutput(SEARCH_HISTORY, Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(historyList);
             fileOutputStream.close();
@@ -45,7 +47,7 @@ public class LocalStorageManager {
         List<History> history = null;
         FileInputStream fileInputStream;
         try {
-            fileInputStream = context.openFileInput(searchHistory);
+            fileInputStream = context.openFileInput(SEARCH_HISTORY);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             history = (List<History>) objectInputStream.readObject();
             fileInputStream.close();
@@ -54,5 +56,33 @@ public class LocalStorageManager {
             e.printStackTrace();
         }
         return history;
+    }
+
+    public void saveSettings(UserSettings settings, String uid, Context context){
+        FileOutputStream fileOutputStream;
+        try {
+            fileOutputStream = context.openFileOutput(USER_SETTINGS + "_" + uid, Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(settings);
+            fileOutputStream.close();
+            objectOutputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public UserSettings readSettings(Context context, String uid){
+        UserSettings settings = null;
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream = context.openFileInput(USER_SETTINGS + "_" + uid);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            settings = (UserSettings) objectInputStream.readObject();
+            fileInputStream.close();
+            objectInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return settings;
     }
 }

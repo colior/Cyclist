@@ -29,14 +29,28 @@
     <string name="error_sign_in_failed">Authentication failed</string>
 
     <string-array name="rides">
-        <item>Bicycle</item>
-        <item>Electric Bicycle</item>
-        <item>Electric Scooter</item>
-        <item>Segway</item>
+        <item name="bicycle">Bicycle</item>
+        <item name="electric_bicycle">Electric Bicycle</item>
+        <item name="electric_scooter">Electric Scooter</item>
+        <item name="segway">Segway</item>
     </string-array>
 
     <string name="search">Search</string>
     <string name="where_are_you_riding_to">Where are you riding to?</string>
 
     <string name="settings">Settings</string>
+    <string name="road_type">Road Type:</string>
+    <string name="route_method">Route Method:</string>
+    <string name="ride_type">Ride Type:</string>
+
+    <string-array name="road_types">
+        <item>Bicycle Trail</item>
+        <item>Sidewalk</item>
+        <item>Road</item>
+    </string-array>
+
+    <string-array name="route_methods">
+        <item>Safest</item>
+        <item>Fastest</item>
+    </string-array>
 </resources>

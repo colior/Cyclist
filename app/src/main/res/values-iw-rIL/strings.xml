@@ -24,10 +24,24 @@
     <string name="settings">הגדרות</string>
 
     <string-array name="rides">
-        <item>אופניים</item>
-        <item>אופניים חשמליים</item>
-        <item>קורקינט חשמלי</item>
-        <item>סגווי</item>
+        <item name="bicycle">אופניים</item>
+        <item name="electric_bicycle">אופניים חשמליים</item>
+        <item name="electric_scooter">קורקינט חשמלי</item>
+        <item name="segway">סגווי</item>
     </string-array>
 
+    <string name="road_type">סוג הדרך:</string>
+    <string name="route_method">שיטת ניווט:</string>
+    <string name="ride_type">כלי רכב:</string>
+
+    <string-array name="road_types">
+        <item>שבילי אופניים</item>
+        <item>מדרכה</item>
+        <item>כביש</item>
+    </string-array>
+
+    <string-array name="route_methods">
+        <item>בטוח ביותר</item>
+        <item>מהיר ביותר</item>
+    </string-array>
 </resources>
