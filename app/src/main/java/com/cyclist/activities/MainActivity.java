@@ -24,6 +24,7 @@ import com.cyclist.UI.UIManager;
 import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
 import com.cyclist.logic.LogicManager;
+import com.cyclist.logic.models.History;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
@@ -31,11 +32,14 @@ import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import java.io.IOException;
+import java.sql.Time;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -127,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Address address = addressList.get(0);
                     GeoPoint addressGeoPoint = new GeoPoint(address.getLatitude(),address.getLongitude());
-
+                    saveHistory(geocoder);
                     //TODO: send to Ben
                 }
             }
@@ -137,6 +141,22 @@ public class MainActivity extends AppCompatActivity {
                 // TODO: Handle the error.
             }
         });
+    }
+
+    private void saveHistory(Geocoder geocoder) {
+        History history = new History();
+        IGeoPoint currentLocation = logicManager.getCurrentLocation();
+
+        try {
+            history.setStartingPoint(geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1).get(0).getAddressLine(0));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        history.setDestination(destination);
+        history.setEmail(logicManager.getUser().getEmail());
+        history.setTime(new Date());
+        logicManager.saveHistory(history, this);
     }
 
     @SuppressLint("ClickableViewAccessibility")

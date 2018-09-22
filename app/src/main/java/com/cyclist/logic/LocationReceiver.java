@@ -8,11 +8,14 @@ import com.cyclist.UI.OnLocationChanged;
 
 import org.osmdroid.util.GeoPoint;
 
+import lombok.Getter;
+
 import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
 import static com.cyclist.logic.common.Constants.LAT_TAG;
 import static com.cyclist.logic.common.Constants.LONG_TAG;
 
 public class LocationReceiver extends BroadcastReceiver {
+    @Getter
     private GeoPoint currentLocation;
     private Context mContext;
     private LogicManager logicManager;

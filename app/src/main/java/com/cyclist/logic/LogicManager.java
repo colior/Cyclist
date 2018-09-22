@@ -10,12 +10,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.cyclist.UI.OnLocationChanged;
+import com.cyclist.activities.MainActivity;
 import com.cyclist.activities.SignIn;
 import com.cyclist.logic.common.Constants;
-import com.cyclist.logic.firebase.DBService;
+import com.cyclist.logic.storage.firebase.DBService;
 import com.cyclist.logic.models.History;
 import com.cyclist.logic.models.Report;
 import com.cyclist.logic.models.User;
+import com.cyclist.logic.storage.local.LocalStorageManager;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +41,7 @@ public class LogicManager {
     private RoadManager roadManager = new MapQuestRoadManager(Constants.MAPQUEST_KEY);
     //roadManager.addRequestOption("routeType=bicycle");
     private LocationManager mLocationManager;
+    private LocalStorageManager localStorageManager;
     @Setter @Getter
     private GoogleSignInClient mGoogleSignInClient;
     private GeoPoint currentLocation;
@@ -50,6 +53,7 @@ public class LogicManager {
 
     private LogicManager() {
         dbService = new DBService(this);
+        localStorageManager = new LocalStorageManager();
     }
 
     public static LogicManager getInstance() {
@@ -130,16 +134,17 @@ public class LogicManager {
 
     public boolean saveReport(Report report) {
         try {
-            dbService.save(report, REPORTS_BUCKET);
+            dbService.save(report, REPORTS_BUCKET, report.getTime().toString());
         } catch (Exception ex) {
             return false;
         }
         return true;
     }
 
-    public boolean saveHistory(History history) {
+    public boolean saveHistory(History history, Context context) {
         try {
-            dbService.save(history, HISTORY_BUCKET);
+            dbService.save(history, HISTORY_BUCKET ,getAuth().getUid() + "/" + history.getTime().toString());
+            localStorageManager.saveHistory(history,context);
         } catch (Exception ex) {
             return false;
         }
