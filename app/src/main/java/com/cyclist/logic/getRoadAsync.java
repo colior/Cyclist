@@ -2,7 +2,7 @@ package com.cyclist.logic;
 
 import android.os.AsyncTask;
 
-import com.cyclist.UI.UIManager;
+import com.cyclist.UI.OnRoadCalculated;
 
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -16,18 +16,20 @@ import java.util.ArrayList;
  */
 
 public class getRoadAsync extends AsyncTask<RoutePoints, Void, Road> {
-    private UIManager uiManager;
+    private OnRoadCalculated presenter;
     private Integer color;
+    private LogicManager logicManager;
 
-    public getRoadAsync(UIManager uiManager, Integer color) {
-        this.uiManager = uiManager;
+    public getRoadAsync(OnRoadCalculated presenter, Integer color) {
+        this.presenter = presenter;
         this.color = color;
     }
 
     @Override
     protected Road doInBackground(RoutePoints... routePoints) {
         ArrayList<GeoPoint> points = routePoints[0].getData();
-        RoadManager roadManager = LogicManager.getInstance().getRoadManger();
+        logicManager = LogicManager.getInstance();
+        RoadManager roadManager = logicManager.getRoadManger();
         return roadManager.getRoad(points);
     }
 
@@ -36,18 +38,22 @@ public class getRoadAsync extends AsyncTask<RoutePoints, Void, Road> {
     protected void onPostExecute(Road road) {
         if (road == null)
             return;
-        if (road.mStatus == Road.STATUS_TECHNICAL_ISSUE)
-            uiManager.showErrorMsg("Technical issue when getting the route");
-        else if (road.mStatus > Road.STATUS_TECHNICAL_ISSUE) //functional issues
-            uiManager.showErrorMsg("No possible route here");
+        if (road.mStatus == Road.STATUS_TECHNICAL_ISSUE) {
+            presenter.showErrorMsg("Technical issue when getting the route");
+            return;
+        }
+        else if (road.mStatus > Road.STATUS_TECHNICAL_ISSUE) {//functional issues
+            presenter.showErrorMsg("No possible route here");
+            return;
+        }
 
+        logicManager.setPresentedRoad(road);
         Polyline roadOverlay;
         if (color != null) {
             roadOverlay = RoadManager.buildRoadOverlay(road, color, 12.0f);
         } else {
             roadOverlay = RoadManager.buildRoadOverlay(road);
         }
-
-        uiManager.drawRoute(roadOverlay);
+        presenter.promptRouteDetails(road, roadOverlay);
     }
 }
