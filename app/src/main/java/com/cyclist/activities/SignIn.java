@@ -1,5 +1,6 @@
 package com.cyclist.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -42,7 +43,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     private static final int RC_SIGN_IN = 9001;
 
-    private LogicManager logicManager = LogicManager.getInstance();
+    private LogicManager logicManager;
     private EditText username;
     private EditText password;
     private Button signUpButton;
@@ -50,22 +51,37 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     private LoginButton facebookLoginButton;
     private CallbackManager facebookCallbackManager;
     private GoogleSignInClient mGoogleSignInClient;
+    private ProgressDialog loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_singin);
+        enableLoadingBar();
         initializeComponents();
     }
 
+    private void enableLoadingBar() {
+        //TODO: check
+        //TODO: check if need to hide the main LinearLayout
+        loadingBar = new ProgressDialog(this);
+        loadingBar.setTitle("Welcome To Cyclist!");
+        loadingBar.setMessage("Please wait while we check your details");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
+    }
+
+    public void disableProgressBar() {
+        loadingBar.hide();
+    }
 
     public void onUserSignedIn(){
         goToMainActivity();
     }
 
     private void initializeComponents() {
-        logicManager.setSignIn(this);
+        logicManager = new LogicManager(this);
         username = findViewById(R.id.usernameEditText);
         password = findViewById(R.id.passwordEditText);
         signUpButton = findViewById(R.id.signUpButton);
@@ -299,4 +315,6 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                     }
                 });
     }
+
+
 }

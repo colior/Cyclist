@@ -55,6 +55,13 @@ public class LogicManager {
     private SignIn signIn;
     UserSettings userSettings;
 
+    public LogicManager(SignIn signIn){
+        this.signIn = signIn;
+        dbService = new DBService(this);
+        localStorageManager = new LocalStorageManager();
+        instance = this;
+    }
+
     private LogicManager() {
         dbService = new DBService(this);
         localStorageManager = new LocalStorageManager();
@@ -94,6 +101,7 @@ public class LogicManager {
         if(user != null) {
             signIn.onUserSignedIn();
         }
+        signIn.disableProgressBar();
     }
 
     public void connect(){

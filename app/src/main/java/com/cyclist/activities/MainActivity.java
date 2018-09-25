@@ -42,6 +42,7 @@ import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.Projection;
 
 import java.io.IOException;
 import java.sql.Time;
@@ -212,8 +213,21 @@ public class MainActivity extends AppCompatActivity {
         logicManager.saveHistory(history, this);
     }
 
+
     @SuppressLint("ClickableViewAccessibility")
     private void initializeListeners() {
+
+        mapView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Projection proj = mapView.getProjection();
+                IGeoPoint clickedLoc = proj.fromPixels(v.getScrollX(),v.getScrollY());
+                //TODO: check if the geoPoint well received
+                //TODO: add mark on the map
+                return false;
+            }
+        } );
+
         centerMeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
