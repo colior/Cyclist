@@ -29,6 +29,8 @@ import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -53,7 +55,7 @@ public class LogicManager {
     private User user;
     @Setter
     private SignIn signIn;
-    UserSettings userSettings;
+    private UserSettings userSettings;
 
     private LogicManager() {
         dbService = new DBService(this);
@@ -170,6 +172,10 @@ public class LogicManager {
             return false;
         }
         return true;
+    }
+
+    public List<History> getHistory(Context context){
+        return localStorageManager.readHistory(context);
     }
 
     public OnLocationChanged getOnLocationChangedListener() {

@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +46,6 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int ROUTE_METHODS_ID = 2000;
 
     private boolean isSettingsOpen = false;
+    private boolean isSearchOpen = false;
     private FirebaseUser firebaseUser;
     private MapView mapView;
     private TextView usernameTextView;
@@ -78,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
     private Animation settingsUp;
     private String destination;
     private UserSettings userSettings;
+    private RelativeLayout homeSearch;
+    private RelativeLayout workSearch;
+    private RelativeLayout favoriteSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,13 +109,16 @@ public class MainActivity extends AppCompatActivity {
         searchBarUp = AnimationUtils.loadAnimation(this, R.anim.search_bar_up);
         closeSearchBtn = findViewById(R.id.closeSearchBtn);
         searchLayout = findViewById(R.id.searchSlider);
+        settingsLayout = findViewById(R.id.settingsLayout);
         searchButton = findViewById(R.id.searchBtn);
         usernameTextView = findViewById(R.id.usernameTextView);
         mapView = findViewById(R.id.map);
         centerMeBtn = findViewById(R.id.centerLocationBtn);
         logoutButton = findViewById(R.id.logoutBtn);
         settingsButton = findViewById(R.id.settingsBtn);
-        settingsLayout = findViewById(R.id.settingsLayout);
+        homeSearch = findViewById(R.id.homeSearch);
+        workSearch = findViewById(R.id.workSearch);
+        favoriteSearch = findViewById(R.id.favoriteSearch);
         settingsDown = AnimationUtils.loadAnimation(this, R.anim.settings_down);
         settingsUp = AnimationUtils.loadAnimation(this, R.anim.settings_up);
         uiManager.setMap(mapView);
@@ -118,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         settingsLayout.setVisibility(View.GONE);
         firebaseUser = logicManager.getCurrentUser();
         usernameTextView.setText(logicManager.getUser().getFName());
+
 
         createSettingsRadioButtons();
         initializeSearchAddressComponents();
@@ -170,11 +179,12 @@ public class MainActivity extends AppCompatActivity {
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onPlaceSelected(Place place) {
                 destination = place.getName().toString();
                 String addressStr = place.getAddress().toString();
-                if((addressStr != null) && !(addressStr.equals(""))){
+                if(!(addressStr.equals(""))){
                     List<Address> addressList = null;
                     Geocoder geocoder = new Geocoder(MainActivity.this);
                     try {
@@ -214,6 +224,14 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void initializeListeners() {
+
+        homeSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         centerMeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -281,9 +299,20 @@ public class MainActivity extends AppCompatActivity {
         isSettingsOpen = true;
     }
 
+    private void hideSettingsLayer() {
+        settingsLayout.setVisibility(View.GONE);
+        settingsLayout.startAnimation(settingsDown);
+        UserSettings newUserSettings = getNewUserSettings();
+        if(!newUserSettings.equals(this.userSettings)){
+            logicManager.setUserSettings(newUserSettings, this);
+        }
+        isSettingsOpen = false;
+    }
+
     private void showSearchBar() {
         searchLayout.setVisibility(View.VISIBLE);
         searchLayout.startAnimation(searchBarDown);
+        isSearchOpen = true;
     }
 
     private void hideSearchBar() {
@@ -292,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
         ((InputMethodManager) Objects.requireNonNull(getSystemService(Context.INPUT_METHOD_SERVICE)))
                 .hideSoftInputFromWindow(findViewById(R.id.mainLayout)
                         .getWindowToken(), 0);
+        isSearchOpen = false;
     }
 
     @Override
@@ -324,13 +354,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(isSettingsOpen) {
-            settingsLayout.setVisibility(View.GONE);
-            settingsLayout.startAnimation(settingsDown);
-            UserSettings newUserSettings = getNewUserSettings();
-            if(!newUserSettings.equals(this.userSettings)){
-                logicManager.setUserSettings(newUserSettings, this);
-            }
-            isSettingsOpen = false;
+            hideSettingsLayer();
+        }
+        else if(isSearchOpen){
+            hideSearchBar();
         }
     }
 

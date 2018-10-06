@@ -42,6 +42,10 @@
     <string name="road_type">Road Type:</string>
     <string name="route_method">Route Method:</string>
     <string name="ride_type">Ride Type:</string>
+    <string name="home">Home</string>
+    <string name="work">Work</string>
+    <string name="favorites">Favorites</string>
+    <string name="no_address">No Address</string>
 
     <string-array name="road_types">
         <item>Bicycle Trail</item>
