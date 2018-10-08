@@ -1,7 +1,10 @@
 package com.cyclist.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Address;
@@ -50,6 +53,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static android.content.Intent.ACTION_CLOSE_SYSTEM_DIALOGS;
 import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int RIDE_TYPES_ID = 1000;
     private static final int ROAD_TYPES_ID = 2000;
     private static final int ROUTE_METHODS_ID = 2000;
+    public static final int HAS_ADDRESS = 1;
 
     private boolean isSettingsOpen = false;
     private boolean isSearchOpen = false;
-    private FirebaseUser firebaseUser;
     private MapView mapView;
     private TextView usernameTextView;
     private ImageButton centerMeBtn;
@@ -78,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
     private Animation searchBarUp;
     private Animation settingsDown;
     private Animation settingsUp;
-    private String destination;
     private UserSettings userSettings;
     private RelativeLayout homeSearch;
     private RelativeLayout workSearch;
+    private RelativeLayout historySearch;
     private RelativeLayout favoriteSearch;
 
     @Override
@@ -119,12 +123,12 @@ public class MainActivity extends AppCompatActivity {
         homeSearch = findViewById(R.id.homeSearch);
         workSearch = findViewById(R.id.workSearch);
         favoriteSearch = findViewById(R.id.favoriteSearch);
+        historySearch = findViewById(R.id.historySearch);
         settingsDown = AnimationUtils.loadAnimation(this, R.anim.settings_down);
         settingsUp = AnimationUtils.loadAnimation(this, R.anim.settings_up);
         uiManager.setMap(mapView);
         searchLayout.setVisibility(View.GONE);
         settingsLayout.setVisibility(View.GONE);
-        firebaseUser = logicManager.getCurrentUser();
         usernameTextView.setText(logicManager.getUser().getFName());
 
 
@@ -182,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onPlaceSelected(Place place) {
-                destination = place.getName().toString();
                 String addressStr = place.getAddress().toString();
                 if(!(addressStr.equals(""))){
                     List<Address> addressList = null;
@@ -194,19 +197,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                     Address address = addressList.get(0);
                     GeoPoint addressGeoPoint = new GeoPoint(address.getLatitude(),address.getLongitude());
-                    saveHistory(geocoder);
+                    saveHistory(geocoder, addressStr);
                     //TODO: send to Ben
                 }
             }
 
             @Override
             public void onError(Status status) {
-                // TODO: Handle the error.
             }
         });
     }
 
-    private void saveHistory(Geocoder geocoder) {
+    private void saveHistory(Geocoder geocoder, String destination) {
         History history = new History();
         IGeoPoint currentLocation = logicManager.getCurrentLocation();
 
@@ -225,10 +227,58 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void initializeListeners() {
 
+        homeSearch.setOnLongClickListener(new View.OnLongClickListener(){
+
+            @Override
+            public boolean onLongClick(View v) {
+                chooseHomeAddress();
+                return true;
+            }
+        });
+
         homeSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!logicManager.getUser().getHome().isEmpty()){
+                    //TODO: send to Ben
+                }
+                else {
+                    chooseHomeAddress();
+                }
+            }
+        });
 
+        workSearch.setOnLongClickListener(new View.OnLongClickListener(){
+
+            @Override
+            public boolean onLongClick(View v) {
+                chooseWorkAddress();
+                return true;
+            }
+        });
+
+        workSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!logicManager.getUser().getWork().isEmpty()){
+                    //TODO: send to Ben
+                }
+                else {
+                    chooseWorkAddress();
+                }
+            }
+        });
+
+        historySearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!logicManager.getHistory(MainActivity.this).isEmpty()) {
+                    chooseHistoryAddress();
+                }
+                else {
+                    AlertDialog alert = new AlertDialog.Builder(MainActivity.this).setMessage("You have no history yet").setTitle("No History").create();
+                    alert.show();
+                }
             }
         });
 
@@ -293,6 +343,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void chooseHistoryAddress() {
+        Intent historyAddressActivity = new Intent(MainActivity.this, HistoryActivity.class);
+        startActivityForResult(historyAddressActivity, HAS_ADDRESS);
+    }
+
+    private void chooseWorkAddress() {
+        Intent addWorkActivity = new Intent(MainActivity.this, AddWorkActivity.class);
+        startActivityForResult(addWorkActivity, HAS_ADDRESS);
+    }
+
+    private void chooseHomeAddress() {
+        Intent addHomeActivity = new Intent(MainActivity.this, AddHomeActivity.class);
+        startActivityForResult(addHomeActivity, HAS_ADDRESS);
+    }
+
     private void showSettingsLayer() {
         settingsLayout.setVisibility(View.VISIBLE);
         settingsLayout.startAnimation(settingsUp);
@@ -339,25 +404,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser;
-        if (logicManager.getCurrentUser() != null) {
-            updateUI();
-        }
-    }
-
-    //TODO: update UI while there is user connected
-    private void updateUI() {
-    }
-
-    @Override
     public void onBackPressed() {
         if(isSettingsOpen) {
             hideSettingsLayer();
         }
         else if(isSearchOpen){
             hideSearchBar();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == HAS_ADDRESS && data != null) {
+            String address = data.getStringExtra("address");
+            //TODO: send to Ben
         }
     }
 

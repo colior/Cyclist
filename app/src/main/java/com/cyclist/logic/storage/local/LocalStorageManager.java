@@ -19,7 +19,7 @@ public class LocalStorageManager {
 
     private static final String SEARCH_HISTORY = "SearchHistory";
     private static final String USER_SETTINGS = "UserSettings";
-    private static final int MAX_HISTORY_NUMBER = 10;
+    private static final int MAX_HISTORY_NUMBER = 50;
 
     public void saveHistory(History history, Context context){
         FileOutputStream fileOutputStream;

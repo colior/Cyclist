@@ -75,7 +75,7 @@ public class LogicManager {
         localStorageManager.saveSettings(userSettings, getAuth().getUid(), context);
         if(!userSettings.getRideType().equals(user.getRideType())){
             user.setRideType(userSettings.getRideType());
-            dbService.save(user, USERS_BUCKET, getAuth().getUid());
+            saveUser(user);
         }
     }
 
@@ -145,7 +145,7 @@ public class LogicManager {
     }
 
 
-    public boolean saveUser(User user) {
+    public boolean saveNewUser(User user) {
         try {
             dbService.saveNewUser(user);
         } catch (Exception ex) {
@@ -158,6 +158,15 @@ public class LogicManager {
     public boolean saveReport(Report report) {
         try {
             dbService.save(report, REPORTS_BUCKET, report.getTime().toString());
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean saveUser(User user){
+        try {
+            dbService.save(user, USERS_BUCKET ,getAuth().getUid());
         } catch (Exception ex) {
             return false;
         }
