@@ -6,4 +6,6 @@
     <color name="colorDot">#4facff</color>
     <color name="colorRoute">#249ccc</color>
     <color name="settingsBackground">#759180</color>
+    <color name="settingsTop">#486b56</color>
+    <color name="bottomLine">#31493b</color>
 </resources>

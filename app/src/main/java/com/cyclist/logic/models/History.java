@@ -1,5 +1,6 @@
 package com.cyclist.logic.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -9,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class History {
-    private String username;
+public class History implements Serializable {
+    private String email;
     private String destination;
     private String startingPoint;
-    public Date Time;
+    public Date time;
 }

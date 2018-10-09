@@ -172,7 +172,7 @@ public class SignUp extends AppCompatActivity {
         user.setFName(fname.getText().toString());
         user.setLName(lname.getText().toString());
         user.setBirthday(myCalendar.getTime());
-        user.setRideType(User.RideType.getByDisplayName(rides.getSelectedItem().toString()));
+        user.setRideType(User.RideType.getByPosition(rides.getSelectedItemPosition()));
         return user;
     }
 

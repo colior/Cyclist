@@ -1,4 +1,4 @@
-package com.cyclist.logic.firebase;
+package com.cyclist.logic.storage.firebase;
 
 import android.util.Log;
 
@@ -31,14 +31,14 @@ public class DBService{
         return mAuth.getCurrentUser();
     }
 
-    public void save(Object obj, String bucketName){
+    public void save(Object obj, String bucketName, String innerLocation){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference(bucketName + "/" + mAuth.getUid());
+        DatabaseReference myRef = database.getReference(bucketName + "/" + innerLocation);
         myRef.setValue(obj);
     }
 
     public void saveNewUser(final User userToSave){
-        String uid = mAuth.getUid();
+        final String uid = mAuth.getUid();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
         Query uidQuery = myRef.child(USERS_BUCKET).child(uid);
@@ -47,7 +47,7 @@ public class DBService{
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 if(user == null){
-                    save(userToSave, USERS_BUCKET);
+                    save(userToSave, USERS_BUCKET, uid);
                     logicManager.setUser(userToSave);
                 }
                 else{
