@@ -22,7 +22,6 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.cyclist.R;
 import com.cyclist.UI.InstructionsFragment;
 import com.cyclist.UI.OnNewInstruction;
 import com.cyclist.UI.RouteDetailsFragment;
@@ -169,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         }
     }
 
+
     private void saveHistory(Geocoder geocoder) {
         History history = new History();
         IGeoPoint currentLocation = logicManager.getCurrentLocation();
@@ -228,6 +228,12 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         isSettingsOpen = true;
     }
 
+    private void showSettingsLayer() {
+        settingsLayout.setVisibility(View.VISIBLE);
+        settingsLayout.startAnimation(settingsUp);
+        isSettingsOpen = true;
+    }
+
     private void showSearchBar() {
         searchLayout.setVisibility(View.VISIBLE);
         searchLayout.startAnimation(searchBarDown);
@@ -245,12 +251,14 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     public void onResume() {
         super.onResume();
         registerReceiver(locationReceiver, intentFilter);
+        uiManager.resumeFollowMe();
     }
 
     @Override
     protected void onPause() {
         unregisterReceiver(locationReceiver);
         super.onPause();
+        uiManager.pauseFollowMe();
     }
 
     @Override
