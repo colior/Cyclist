@@ -22,6 +22,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.cyclist.R;
 import com.cyclist.UI.InstructionsFragment;
 import com.cyclist.UI.OnNewInstruction;
 import com.cyclist.UI.RouteDetailsFragment;
@@ -220,12 +221,6 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             }
             return true;
         });
-    }
-
-    private void showSettingsLayer() {
-        settingsLayout.setVisibility(View.VISIBLE);
-        settingsLayout.startAnimation(settingsUp);
-        isSettingsOpen = true;
     }
 
     private void showSettingsLayer() {
