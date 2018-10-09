@@ -12,4 +12,5 @@ public interface OnLocationChanged {
     void onLocationChanged(GeoPoint location);
     void showNewInstruction(Pair<Integer, String> pair);
     MapView getMapView();
+    void showRouteDetailsBar(Double length, Double duration);
 }

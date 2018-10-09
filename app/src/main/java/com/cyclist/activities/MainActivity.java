@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.cyclist.R;
 import com.cyclist.UI.InstructionsFragment;
 import com.cyclist.UI.OnNewInstruction;
+import com.cyclist.UI.RouteDetailsFragment;
 import com.cyclist.UI.UIManager;
 import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
@@ -88,14 +89,13 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         firebaseUser = logicManager.getCurrentUser();
         initializeSearchAddressComponents();
         initializeListeners();
+
     }
 
 
     @SuppressLint("ClickableViewAccessibility")
     private void initializeListeners() {
         centerMeBtn.setOnClickListener(v -> uiManager.handleCenterMapClick());
-
-
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,14 +147,12 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     public void onResume() {
         super.onResume();
         registerReceiver(locationReceiver, intentFilter);
-        uiManager.resumeFollowMe();
     }
 
     @Override
     protected void onPause() {
         unregisterReceiver(locationReceiver);
         super.onPause();
-        uiManager.pauseFollowMe();
     }
 
     @Override
@@ -204,9 +202,8 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
                     ArrayList<GeoPoint> destinationList = new ArrayList<>();
                     destinationList.add(new GeoPoint(address.getLatitude(),address.getLongitude()));
 
-
-                    logicManager.buildRoute(uiManager, destinationList, true);
                     hideSearchBar();
+                    uiManager.showDestinationAndWaitForOk(destinationList);
                 }
             }
 
@@ -225,8 +222,29 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     @Override
     public void setInstructionBar(InstructionsFragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentContainer, fragment)
+                .replace(R.id.fragmentContainer, fragment)
                 .addToBackStack(null)
                 .commit();
     }
+
+    @Override
+    public void setRouteDetailsBar(RouteDetailsFragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottomFragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void hideRoutingFragments() {
+        findViewById(R.id.fragmentContainer).setVisibility(View.GONE);
+        findViewById(R.id.bottomFragmentContainer).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showRoutingFragments() {
+        findViewById(R.id.fragmentContainer).setVisibility(View.VISIBLE);
+        findViewById(R.id.bottomFragmentContainer).setVisibility(View.VISIBLE);
+    }
+
 }

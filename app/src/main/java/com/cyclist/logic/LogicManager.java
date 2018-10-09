@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,7 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.routing.MapQuestRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -47,10 +47,12 @@ public class LogicManager {
     private Context mContext;
     private DBService dbService;
     private RoadManager roadManager = new MapQuestRoadManager(Constants.MAPQUEST_KEY);
-    @Setter @Getter
+    @Setter
+    @Getter
     private GoogleSignInClient mGoogleSignInClient;
     private GeoPoint currentLocation;
     private Road presentedRoad;
+    private Double totalRoadLength, totalRoadTime;
     private int roadColor;
     private OnLocationChanged listener;
     private Boolean routeMode = false;
@@ -58,7 +60,7 @@ public class LogicManager {
     private User user;
     @Setter
     private SignIn signIn;
-    private final double DISTANCE = 20d;
+    private RoadNode currentClosestNode;
 
     private LogicManager() {
         dbService = new DBService(this);
@@ -77,14 +79,14 @@ public class LogicManager {
         return instance;
     }
 
-    public void setUser(User user){
+    public void setUser(User user) {
         this.user = user;
-        if(user != null) {
+        if (user != null) {
             signIn.onUserSignedIn();
         }
     }
 
-    public void connect(){
+    public void connect() {
         dbService.getUser();
     }
 
@@ -119,18 +121,24 @@ public class LogicManager {
         this.listener = listener;
     }
 
-    public IGeoPoint getCurrentLocation() {
+    public GeoPoint getCurrentLocation() {
         if (currentLocation != null)
             return currentLocation;
-        else
+        else {
             return null;
-        //TODO CHANGE !!!
+            //TODO CHANGE !!!
+        }
+
     }
 
     public void setCurrentLocation(GeoPoint currentLocation) {
         this.currentLocation = currentLocation;
-        if (routeMode){
+        if (routeMode) {
             listener.showNewInstruction(getCurrentRouteInstruction(listener.getMapView()));
+            Pair<Double, Double> pair = getCurrentRouteDetails(listener.getMapView());
+            if (pair != null) {
+                listener.showRouteDetailsBar(pair.first, pair.second);
+            }
         }
     }
 
@@ -181,19 +189,21 @@ public class LogicManager {
 
     public void setPresentedRoad(Road presentedRoad) {
         this.presentedRoad = presentedRoad;
+        this.totalRoadLength = presentedRoad.mLegs.get(0).mLength;
+        this.totalRoadTime = presentedRoad.mLegs.get(0).mDuration;
     }
 
-    public void buildRoute(UIManager uiManager, ArrayList<GeoPoint> geoPointList, Boolean startFromCurrentLocation){
-        if (startFromCurrentLocation){
+    public void buildRoute(UIManager uiManager, ArrayList<GeoPoint> geoPointList, Boolean startFromCurrentLocation) {
+        if (startFromCurrentLocation) {
             geoPointList.add(0, currentLocation);
         }
         RoutePoints routePoints = new RoutePoints(geoPointList);
         new getRoadAsync(uiManager, roadColor).execute(routePoints);
     }
 
-    private Pair<Integer, String> getCurrentRouteInstruction(MapView mapView){
+    private Pair<Integer, String> getCurrentRouteInstruction(MapView mapView) {
         RoadNode closestNode = findClosestNode(mapView);
-        if (closestNode == null){
+        if (closestNode == null) {
             return null;
         }
         Integer maneuverResId = getManeuverResourceId(closestNode.mManeuverType);
@@ -202,12 +212,13 @@ public class LogicManager {
 
     private Integer getManeuverResourceId(int maneuverType) {
 //        TODO:: Implement switch base on :
-//          https://developer.mapquest.com/documentation/nav-sdk/android/v3.4/javadoc/com/mapquest/navigation/model/Maneuver.Type.html#DESTINATION
-//          https://github.com/MKergall/osmbonuspack/tree/master/OSMNavigator/src/main/res/drawable-mdpi
-//        switch (maneuverType){
-//            case MANEUVER.CONTINUE;
-//        }
-        return R.drawable.ic_continue;
+//        https:developer.mapquest.com/documentation/nav-sdk/android/v3.4/javadoc/com/mapquest/navigation/model/Maneuver.Type.html#DESTINATION
+//        https:github.com/MKergall/osmbonuspack/tree/master/OSMNavigator/src/main/res/drawable-mdpi
+
+        TypedArray iconIds = mContext.getResources().obtainTypedArray(R.array.direction_icons);
+        int iconId = iconIds.getResourceId(maneuverType, R.drawable.ic_empty);
+        iconIds.recycle();
+        return iconId;
     }
 
     private RoadNode findClosestNode(MapView mapView) {
@@ -253,5 +264,24 @@ public class LogicManager {
         this.routeMode = routeMode;
     }
 
+    public boolean isRouteMode() {
+        return routeMode;
+    }
+
+    public Pair<Double,Double> getCurrentRouteDetails(MapView mapView) {
+        RoadNode closestNode = findClosestNode(mapView);
+        if (closestNode == null) {
+            return null;
+        } else {
+            if (closestNode == currentClosestNode) {
+                return null;
+            } else {
+                this.currentClosestNode = closestNode;
+                totalRoadTime -= closestNode.mDuration;
+                totalRoadLength -= closestNode.mLength;
+                return new Pair<>(totalRoadLength, totalRoadTime);
+            }
+        }
+    }
 }
 

@@ -6,4 +6,5 @@ import org.osmdroid.views.overlay.Polyline;
 public interface OnRoadCalculated {
     void showErrorMsg(String msg);
     void promptRouteDetails(Road road, Polyline overlay);
+
 }

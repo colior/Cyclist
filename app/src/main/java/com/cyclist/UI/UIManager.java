@@ -7,10 +7,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.cyclist.R;
 import com.cyclist.logic.LogicManager;
+import com.cyclist.logic.common.Utils;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.Road;
@@ -25,11 +29,12 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import static org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK;
 
-public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalculated {
+public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalculated, RouteDetailsFragment.closeListener {
 
     private Context mContext;
     private MapView map;
@@ -39,9 +44,10 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
     private RotationGestureOverlay rotationGestureOverlay;
     private Polyline shownRoute;
     private Pair<Integer, String> lastPair;
-    private Boolean routeMode;
-    private InstructionsFragment fragment = InstructionsFragment.newInstance(null,null);
+    private Boolean routeMode = false;
     private OnNewInstruction instructionListener;
+    private Marker destinationMarker;
+    private boolean firstLunch = true;
 
     public UIManager(Context mContext) {
         this.mContext = mContext;
@@ -78,16 +84,15 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
         map.getOverlays().add(this.myLocationOverlay);
         map.getOverlays().add(this.compassOverlay);
         map.getOverlays().add(this.rotationGestureOverlay);
+        pauseFollowMe();
     }
 
     public void pauseFollowMe() {
         this.myLocationOverlay.disableFollowLocation();
-        this.myLocationOverlay.disableMyLocation();
     }
 
     public void resumeFollowMe() {
         this.myLocationOverlay.enableFollowLocation();
-        this.myLocationOverlay.enableMyLocation();
     }
 
     private void initMyLocation() {
@@ -117,9 +122,13 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
     @Override
     public void onLocationChanged(GeoPoint location) {
         currentDeviceLocation = location;
-        map.getController().animateTo(currentDeviceLocation);
-        // TODO:: Remove old markers and Add new marker to location.
-
+        if (firstLunch){
+            map.getController().animateTo(currentDeviceLocation);
+            firstLunch = false;
+        }
+        if (routeMode) {
+            map.getController().animateTo(currentDeviceLocation);
+        }
     }
 
 
@@ -159,7 +168,7 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
                 .append(String.format(Locale.getDefault(), " %02.3f km", road.mLegs.get(0).mLength))
                 .append(System.lineSeparator())
                 .append(mContext.getResources().getString(R.string.duration_text))
-                .append(getTimeString(road.mLegs.get(0).mDuration));
+                .append(Utils.getTimeString(road.mLegs.get(0).mDuration, mContext.getResources().getString(R.string.minutes_text)));
 
         dlgBuilder.setMessage(mContext.getResources().getString(R.string.route_title));
         dlgBuilder.setMessage(sb.toString())
@@ -172,31 +181,19 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
         dlg.show();
     }
 
-    private String getTimeString(double duration) {
-        double totalMinutes = duration / 60;
-        Double minutes = totalMinutes % 60;
-        Double hours = totalMinutes / 60;
-        if (hours > 1) {
-            return String.format(Locale.getDefault(), " %1d:%2d", hours.intValue(), minutes.intValue());
-        } else {
-            return String.format(Locale.getDefault(), " %1d %s", minutes.intValue(), mContext.getResources().getString(R.string.minutes_text));
-        }
+    @Override
+    public void showRouteDetailsBar(Double length, Double duration) {
+        RouteDetailsFragment routeDetailsFragment = RouteDetailsFragment.newInstance(duration, length);
+        routeDetailsFragment.setListener(this);
+        instructionListener.setRouteDetailsBar(routeDetailsFragment);
     }
 
     public void clearRoute() {
         if (shownRoute != null) {
             map.getOverlays().remove(shownRoute);
+            map.getOverlays().remove(destinationMarker);
         }
         shownRoute = null;
-    }
-
-    public void addReport(GeoPoint location, String reportTitle) {
-        Drawable nodeIcon = mContext.getResources().getDrawable(R.mipmap.marker_node);
-        Marker nodeMarker = new Marker(map);
-        nodeMarker.setPosition(location);
-        nodeMarker.setIcon(nodeIcon);
-        nodeMarker.setTitle(reportTitle);
-        map.getOverlays().add(nodeMarker);
     }
 
     public void showErrorMsg(String msg) {
@@ -205,11 +202,25 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
 
     public void setRouteMode(Boolean value) {
         if (value) {
-            LogicManager.getInstance().setRouteMode(true);
+            showRouteMode();
+            routeMode = true;
         } else {
             clearRouteMode();
-            this.routeMode = value;
+            this.routeMode = false;
         }
+    }
+
+    private void showRouteMode() {
+        LogicManager.getInstance().setRouteMode(true);
+        instructionListener.showRoutingFragments();
+        resumeFollowMe();
+    }
+
+    private void clearRouteMode() {
+        LogicManager.getInstance().setRouteMode(false);
+        instructionListener.hideRoutingFragments();
+        pauseFollowMe();
+        clearRoute();
     }
 
     @Override
@@ -219,8 +230,8 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
         if (lastPair != null && lastPair.second.equals(pair.second))
             return;
         lastPair = pair;
-        fragment = InstructionsFragment.newInstance(pair.first, pair.second);
-        instructionListener.setInstructionBar(fragment);
+        InstructionsFragment instructionsFragment = InstructionsFragment.newInstance(pair.first, pair.second);
+        instructionListener.setInstructionBar(instructionsFragment);
     }
 
     @Override
@@ -228,11 +239,45 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
         return map;
     }
 
-    private void clearRouteMode() {
 
-    }
 
     public void setInstructionListener(OnNewInstruction instructionListener) {
         this.instructionListener = instructionListener;
+    }
+
+    public void showDestinationAndWaitForOk(ArrayList<GeoPoint> destinationList) {
+        Drawable nodeIcon = mContext.getResources().getDrawable(R.drawable.marker_destination);
+        destinationMarker = new Marker(map);
+        destinationMarker.setIcon(nodeIcon);
+        GeoPoint destination = destinationList.get(destinationList.size() - 1);
+        destinationMarker.setPosition(destination);
+        map.getOverlayManager().add(destinationMarker);
+        map.getController().setCenter(destination);
+        map.invalidate();
+        AlertDialog.Builder dlgBuilder = new AlertDialog.Builder(mContext);
+
+        dlgBuilder.setMessage(mContext.getResources().getString(R.string.destination_text))
+                .setPositiveButton(mContext.getResources().getString(R.string.go_text), (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                    LogicManager manager = LogicManager.getInstance();
+                    manager.buildRoute(this, destinationList, true);
+                });
+        dlgBuilder.setOnCancelListener(dialogInterface -> {
+            map.getOverlayManager().remove(destinationMarker);
+            LogicManager manager = LogicManager.getInstance();
+            map.getController().animateTo(manager.getCurrentLocation());
+        });
+
+        AlertDialog dlg = dlgBuilder.create();
+        dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        WindowManager.LayoutParams wmlp = dlg.getWindow().getAttributes();
+
+        wmlp.gravity = Gravity.TOP;
+        dlg.show();
+    }
+
+    @Override
+    public void onCloseClick() {
+        setRouteMode(false);
     }
 }
