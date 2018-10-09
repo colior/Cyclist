@@ -23,6 +23,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cyclist.R;
+import com.cyclist.UI.InstructionsFragment;
+import com.cyclist.UI.OnNewInstruction;
+import com.cyclist.UI.RouteDetailsFragment;
 import com.cyclist.UI.UIManager;
 import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
@@ -44,14 +47,14 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import java.io.IOException;
-import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnNewInstruction{
 
     private static final int RIDE_TYPES_ID = 1000;
     private static final int ROAD_TYPES_ID = 2000;
@@ -91,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         //see also StorageUtils
         //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's tile servers will get you banned based on this string
         setContentView(R.layout.activity_main);
-        //inflate and create the map
 
         intentFilter = new IntentFilter();
         intentFilter.addAction(BROADCAST_ACTION);
@@ -99,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
         logicManager.setListener(uiManager);
 
         startService(new Intent(this, FollowLocationService.class));
+
+        initActivityViews();
 
         searchBarDown = AnimationUtils.loadAnimation(this, R.anim.search_bar_down);
         searchBarUp = AnimationUtils.loadAnimation(this, R.anim.search_bar_up);
@@ -165,36 +169,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initializeSearchAddressComponents() {
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                destination = place.getName().toString();
-                String addressStr = place.getAddress().toString();
-                if((addressStr != null) && !(addressStr.equals(""))){
-                    List<Address> addressList = null;
-                    Geocoder geocoder = new Geocoder(MainActivity.this);
-                    try {
-                        addressList = geocoder.getFromLocationName(addressStr , 1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Address address = addressList.get(0);
-                    GeoPoint addressGeoPoint = new GeoPoint(address.getLatitude(),address.getLongitude());
-                    saveHistory(geocoder);
-                    //TODO: send to Ben
-                }
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-            }
-        });
-    }
 
     private void saveHistory(Geocoder geocoder) {
         History history = new History();
@@ -214,17 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     private void initializeListeners() {
-        centerMeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.centerLocationBtn:
-                        uiManager.handleCenterMapClick();
-                        break;
-                }
-            }
-        });
-
+        centerMeBtn.setOnClickListener(v -> uiManager.handleCenterMapClick());
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -232,46 +196,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logicManager.getAuth().signOut();
-                LoginManager.getInstance().logOut();
-                if(logicManager.getMGoogleSignInClient() != null) {
-                    logicManager.getMGoogleSignInClient().signOut();
+        logoutButton.setOnClickListener(v -> {
+            logicManager.getAuth().signOut();
+            LoginManager.getInstance().logOut();
+            if(logicManager.getMGoogleSignInClient() != null) {
+                logicManager.getMGoogleSignInClient().signOut();
+            }
+            Intent loginActivity = new Intent(MainActivity.this, SignIn.class);
+            startActivity(loginActivity);
+            finish();
+        });
+
+        searchButton.setOnClickListener(v -> showSearchBar());
+
+        closeSearchBtn.setOnClickListener(v -> hideSearchBar());
+
+        searchLayout.setOnTouchListener((v, event) -> {
+            float startY = 0;
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                float endY = event.getY();
+                if (endY < startY) {
+                    hideSearchBar();
                 }
-                Intent loginActivity = new Intent(MainActivity.this, SignIn.class);
-                startActivity(loginActivity);
-                finish();
             }
-        });
-
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSearchBar();
-            }
-        });
-
-        closeSearchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideSearchBar();
-            }
-        });
-
-        searchLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                float startY = 0;
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    float endY = event.getY();
-                    if (endY < startY) {
-                        hideSearchBar();
-                    }
-                }
-                return true;
-            }
+            return true;
         });
     }
 
@@ -317,6 +265,57 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initActivityViews() {
+        searchBarUp = AnimationUtils.loadAnimation(this, R.anim.settings_up);
+        searchBarDown = AnimationUtils.loadAnimation(this, R.anim.settings_down);
+        closeSearchBtn = findViewById(R.id.closeSearchBtn);
+        searchLayout = findViewById(R.id.searchSlider);
+        searchButton = findViewById(R.id.searchBtn);
+        usernameTextView = findViewById(R.id.usernameTextView);
+        mapView = findViewById(R.id.map);
+        centerMeBtn = findViewById(R.id.centerLocationBtn);
+        logoutButton = findViewById(R.id.logoutBtn);
+        settingsButton = findViewById(R.id.settingsBtn);
+        uiManager.setMap(mapView);
+        searchLayout.setVisibility(View.GONE);
+        usernameTextView.setText(logicManager.getUser().getFName());
+        uiManager.setInstructionListener(this);
+    }
+
+    private void initializeSearchAddressComponents() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                destination = place.getName().toString();
+                String addressStr = place.getAddress().toString();
+                if((addressStr != null) && !(addressStr.equals(""))){
+                    List<Address> addressList = null;
+                    Geocoder geocoder = new Geocoder(MainActivity.this);
+                    try {
+                        addressList = geocoder.getFromLocationName(addressStr , 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Address address = addressList.get(0);
+                    ArrayList<GeoPoint> destinationList = new ArrayList<>();
+                    destinationList.add(new GeoPoint(address.getLatitude(),address.getLongitude()));
+
+                    hideSearchBar();
+                    uiManager.showDestinationAndWaitForOk(destinationList);
+                }
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                uiManager.showErrorMsg(status.getStatusMessage());
+            }
+        });
+    }
+
     //TODO: update UI while there is user connected
     private void updateUI() {
     }
@@ -345,4 +344,34 @@ public class MainActivity extends AppCompatActivity {
         userSettings.setRouteMethod(Profile.RouteMethod.getByPosition(radioGroup.getCheckedRadioButtonId() - ROUTE_METHODS_ID));
         return userSettings;
     }
+
+
+    @Override
+    public void setInstructionBar(InstructionsFragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void setRouteDetailsBar(RouteDetailsFragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottomFragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void hideRoutingFragments() {
+        findViewById(R.id.fragmentContainer).setVisibility(View.GONE);
+        findViewById(R.id.bottomFragmentContainer).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showRoutingFragments() {
+        findViewById(R.id.fragmentContainer).setVisibility(View.VISIBLE);
+        findViewById(R.id.bottomFragmentContainer).setVisibility(View.VISIBLE);
+    }
+
 }
