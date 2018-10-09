@@ -10,8 +10,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
@@ -21,6 +25,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cyclist.R;
 import com.cyclist.UI.UIManager;
@@ -28,6 +33,7 @@ import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
 import com.cyclist.logic.LogicManager;
 import com.cyclist.logic.models.History;
+import com.cyclist.logic.models.Report;
 import com.cyclist.logic.models.User;
 import com.cyclist.logic.models.UserSettings;
 import com.cyclist.logic.search.Profile;
@@ -36,18 +42,23 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.Projection;
+import org.osmdroid.views.overlay.Marker;
 
 import java.io.IOException;
 import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.cyclist.logic.common.Constants.BROADCAST_ACTION;
 
@@ -63,10 +74,16 @@ public class MainActivity extends AppCompatActivity {
     private TextView usernameTextView;
     private ImageButton centerMeBtn;
     private ImageButton searchButton;
+    private ImageButton reportButton;
+    private ImageButton blockedBtn;
+    private ImageButton policeBtn;
+    private ImageButton distuptionBtn;
+    private ImageButton unknownDangerBtn;
     private ImageButton settingsButton;
     private ImageButton logoutButton;
     private ImageButton closeSearchBtn;
     private FrameLayout searchLayout;
+    private FrameLayout reportLayout;
     private RelativeLayout settingsLayout;
     private UIManager uiManager;
     private LogicManager logicManager = LogicManager.getInstance();
@@ -74,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter intentFilter;
     private Animation searchBarDown;
     private Animation searchBarUp;
+    private Animation reportBarDown;
+    private Animation reportBarUp;
     private Animation settingsDown;
     private Animation settingsUp;
     private String destination;
@@ -102,9 +121,13 @@ public class MainActivity extends AppCompatActivity {
 
         searchBarDown = AnimationUtils.loadAnimation(this, R.anim.search_bar_down);
         searchBarUp = AnimationUtils.loadAnimation(this, R.anim.search_bar_up);
+        reportBarDown = AnimationUtils.loadAnimation(this, R.anim.report_bar_down);
+        reportBarUp = AnimationUtils.loadAnimation(this, R.anim.report_bar_up);
         closeSearchBtn = findViewById(R.id.closeSearchBtn);
         searchLayout = findViewById(R.id.searchSlider);
         searchButton = findViewById(R.id.searchBtn);
+        reportLayout = findViewById(R.id.reportSlider);
+        reportButton = findViewById(R.id.reportBtn);
         usernameTextView = findViewById(R.id.usernameTextView);
         mapView = findViewById(R.id.map);
         centerMeBtn = findViewById(R.id.centerLocationBtn);
@@ -115,14 +138,64 @@ public class MainActivity extends AppCompatActivity {
         settingsUp = AnimationUtils.loadAnimation(this, R.anim.settings_up);
         uiManager.setMap(mapView);
         searchLayout.setVisibility(View.GONE);
+        reportLayout.setVisibility(View.GONE);
         settingsLayout.setVisibility(View.GONE);
         firebaseUser = logicManager.getCurrentUser();
         usernameTextView.setText(logicManager.getUser().getFName());
 
         createSettingsRadioButtons();
         initializeSearchAddressComponents();
+        initializeReportComponents();
         initializeListeners();
     }
+
+    private void initializeReportComponents() {
+        blockedBtn = findViewById(R.id.blockedBtn);
+        policeBtn = findViewById(R.id.policeBtn);
+        distuptionBtn = findViewById(R.id.disruptionBtn);;
+        unknownDangerBtn = findViewById(R.id.unknownDangerBtn);
+
+        blockedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addReport(Report.ReportDescription.BLOCKED);
+            }
+        });
+
+        policeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addReport(Report.ReportDescription.POLICE);
+            }
+        });
+
+        distuptionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addReport(Report.ReportDescription.DISRUPTION);
+            }
+        });
+
+        unknownDangerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addReport(Report.ReportDescription.UNKNOWN_DANGER);
+            }
+        });
+    }
+
+    private void addReport(Report.ReportDescription reportDescription) {
+        Report report = Report.builder()
+                .description(reportDescription)
+                .username(logicManager.getUser().getEmail())
+                .isActive(true)
+                .time(new Date())
+                .destination(uiManager.getCurrentDeviceLocation())
+                .build();
+        //TODO: saveReport
+        hideReportBar();
+    }
+
 
     private void createSettingsRadioButtons() {
         String[] rides = getResources().getStringArray(R.array.rides);
@@ -225,6 +298,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 logicManager.getAuth().signOut();
                 LoginManager.getInstance().logOut();
-                if(logicManager.getMGoogleSignInClient() != null) {
+                if (logicManager.getMGoogleSignInClient() != null) {
                     logicManager.getMGoogleSignInClient().signOut();
                 }
                 Intent loginActivity = new Intent(MainActivity.this, SignIn.class);
@@ -252,7 +327,12 @@ public class MainActivity extends AppCompatActivity {
                 showSearchBar();
             }
         });
-
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showReportBar();
+            }
+        });
         closeSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -273,6 +353,22 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+//        //save for backup
+//         mapView.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                if((event.getActionMasked() == MotionEvent.ACTION_UP) && (event.getDownTime() > TimeUnit.SECONDS.toMillis(3))){
+//                    long time = TimeUnit.MILLISECONDS.toSeconds(event.getDownTime());
+//                    Projection proj = mapView.getProjection();
+//                    IGeoPoint touchedPoint = proj.fromPixels((int)event.getX(), (int)event.getY());
+//                    touchedPoint.toString();
+//
+//                }
+//                long time = event.getDownTime();
+//                return true;
+//            }
+//        });
     }
 
     private void showSettingsLayer() {
@@ -286,9 +382,22 @@ public class MainActivity extends AppCompatActivity {
         searchLayout.startAnimation(searchBarDown);
     }
 
+    private void showReportBar(){
+        reportLayout.setVisibility(View.VISIBLE);
+        reportLayout.startAnimation(reportBarDown);
+    }
+
     private void hideSearchBar() {
         searchLayout.setVisibility(View.GONE);
         searchLayout.startAnimation(searchBarUp);
+        ((InputMethodManager) Objects.requireNonNull(getSystemService(Context.INPUT_METHOD_SERVICE)))
+                .hideSoftInputFromWindow(findViewById(R.id.mainLayout)
+                        .getWindowToken(), 0);
+    }
+
+    private void hideReportBar() {
+        reportLayout.setVisibility(View.GONE);
+        reportLayout.startAnimation(reportBarUp);
         ((InputMethodManager) Objects.requireNonNull(getSystemService(Context.INPUT_METHOD_SERVICE)))
                 .hideSoftInputFromWindow(findViewById(R.id.mainLayout)
                         .getWindowToken(), 0);
