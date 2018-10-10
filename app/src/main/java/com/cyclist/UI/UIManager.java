@@ -257,7 +257,7 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
         AlertDialog.Builder dlgBuilder = new AlertDialog.Builder(mContext);
 
         dlgBuilder.setMessage(mContext.getResources().getString(R.string.destination_text))
-                .setPositiveButton(mContext.getResources().getString(R.string.go_text), (dialogInterface, i) -> {
+                .setPositiveButton(mContext.getResources().getString(R.string.continue_text), (dialogInterface, i) -> {
                     dialogInterface.dismiss();
                     LogicManager manager = LogicManager.getInstance();
                     manager.buildRoute(this, destinationList, true);

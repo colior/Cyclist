@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     private static final int ROAD_TYPES_ID = 2000;
     private static final int ROUTE_METHODS_ID = 2000;
     public static final int HAS_ADDRESS = 1;
+    public static final String EXTRA_DISPLAY_NAME = "displayName";
+    public static final String EXTRA_ADDRESS = "address";
 
     private boolean isSettingsOpen = false;
     private boolean isSearchOpen = false;
@@ -178,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     }
 
 
-    private void saveHistory(Geocoder geocoder, String destination) {
+    private void saveHistory(Geocoder geocoder, String destination, String displayName) {
         History history = new History();
         IGeoPoint currentLocation = logicManager.getCurrentLocation();
 
@@ -188,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             e.printStackTrace();
         }
 
+        history.setDisplayName(displayName);
         history.setDestination(destination);
         history.setEmail(logicManager.getUser().getEmail());
         history.setTime(new Date());
@@ -203,8 +206,9 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         });
 
         homeSearch.setOnClickListener(v -> {
-            if(!logicManager.getUser().getHome().isEmpty()){
-                //TODO: send to Ben
+            String home = logicManager.getUser().getHome();
+            if(home != null && !home.isEmpty()){
+                selectRoute(home, home);
             }
             else {
                 chooseHomeAddress();
@@ -217,12 +221,17 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         });
 
         workSearch.setOnClickListener(v -> {
-            if(!logicManager.getUser().getWork().isEmpty()){
-                //TODO: send to Ben
+            String work = logicManager.getUser().getWork();
+            if(work != null && !work.isEmpty()){
+                selectRoute(work, work);
             }
             else {
                 chooseWorkAddress();
             }
+        });
+
+        favoriteSearch.setOnClickListener(v -> {
+            chooseFavorite();
         });
 
         historySearch.setOnClickListener(v -> {
@@ -263,6 +272,11 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             }
             return true;
         });
+    }
+
+    private void chooseFavorite() {
+        Intent favoriteActivity = new Intent(MainActivity.this, FavoritesActivity.class);
+        startActivityForResult(favoriteActivity, HAS_ADDRESS);
     }
 
     private void chooseHistoryAddress() {
@@ -350,21 +364,8 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             @Override
             public void onPlaceSelected(Place place) {
                 String addressStr = place.getAddress().toString();
-                if((addressStr != null) && !(addressStr.equals(""))){
-                    List<Address> addressList = null;
-                    Geocoder geocoder = new Geocoder(MainActivity.this);
-                    try {
-                        addressList = geocoder.getFromLocationName(addressStr , 1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Address address = addressList.get(0);
-                    ArrayList<GeoPoint> destinationList = new ArrayList<>();
-                    destinationList.add(new GeoPoint(address.getLatitude(),address.getLongitude()));
-
-                    hideSearchBar();
-                    uiManager.showDestinationAndWaitForOk(destinationList);
-                }
+                String displayName = place.getName().toString();
+                selectRoute(addressStr, displayName);
             }
 
             @Override
@@ -375,8 +376,22 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         });
     }
 
-    //TODO: update UI while there is user connected
-    private void updateUI() {
+    private void selectRoute(String addressStr, String displayName) {
+        if(!(addressStr.equals(""))){
+            List<Address> addressList = null;
+            Geocoder geocoder = new Geocoder(MainActivity.this);
+            try {
+                addressList = geocoder.getFromLocationName(addressStr , 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Address address = addressList.get(0);
+            saveHistory(geocoder, addressStr, displayName);
+            ArrayList<GeoPoint> destinationList = new ArrayList<>();
+            destinationList.add(new GeoPoint(address.getLatitude(),address.getLongitude()));
+            hideSearchBar();
+            uiManager.showDestinationAndWaitForOk(destinationList);
+        }
     }
 
     @Override
@@ -393,8 +408,9 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == HAS_ADDRESS && data != null) {
-            String address = data.getStringExtra("address");
-            //TODO: send to Ben
+            String address = data.getStringExtra(EXTRA_ADDRESS);
+            String displayName = data.getStringExtra(EXTRA_DISPLAY_NAME);
+            selectRoute(address, displayName);
         }
     }
 

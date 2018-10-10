@@ -12,6 +12,9 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
+import static com.cyclist.activities.MainActivity.EXTRA_ADDRESS;
+import static com.cyclist.activities.MainActivity.EXTRA_DISPLAY_NAME;
+
 public class AddWorkActivity extends AppCompatActivity {
 
     LogicManager logicManager;
@@ -35,7 +38,8 @@ public class AddWorkActivity extends AppCompatActivity {
                 user.setWork(place.getAddress().toString());
                 logicManager.saveUser(user);
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("address", user.getWork());
+                resultIntent.putExtra(EXTRA_ADDRESS, user.getWork());
+                resultIntent.putExtra(EXTRA_DISPLAY_NAME, place.getName());
                 setResult(AddWorkActivity.RESULT_OK, resultIntent);
                 finish();
             }

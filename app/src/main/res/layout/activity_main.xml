@@ -56,7 +56,7 @@
             android:contentDescription="@string/bt_center_map_description"
             android:cropToPadding="true"
             android:src="@drawable/search"
-            android:layout_gravity="end" />
+            android:layout_gravity="right" />
 
     </FrameLayout>
 
@@ -229,7 +229,7 @@
                                 android:gravity="center"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
-                                android:text="History"
+                                android:text="@string/history"
                                 android:textSize="30sp"
                                 android:textStyle="bold"/>
                         </RelativeLayout>
