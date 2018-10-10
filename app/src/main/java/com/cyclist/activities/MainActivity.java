@@ -1,6 +1,7 @@
 package com.cyclist.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -39,7 +40,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
@@ -59,9 +59,12 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     private static final int RIDE_TYPES_ID = 1000;
     private static final int ROAD_TYPES_ID = 2000;
     private static final int ROUTE_METHODS_ID = 2000;
+    public static final int HAS_ADDRESS = 1;
+    public static final String EXTRA_DISPLAY_NAME = "displayName";
+    public static final String EXTRA_ADDRESS = "address";
 
     private boolean isSettingsOpen = false;
-    private FirebaseUser firebaseUser;
+    private boolean isSearchOpen = false;
     private MapView mapView;
     private TextView usernameTextView;
     private ImageButton centerMeBtn;
@@ -79,8 +82,11 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     private Animation searchBarUp;
     private Animation settingsDown;
     private Animation settingsUp;
-    private String destination;
     private UserSettings userSettings;
+    private RelativeLayout homeSearch;
+    private RelativeLayout workSearch;
+    private RelativeLayout historySearch;
+    private RelativeLayout favoriteSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,20 +114,24 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         searchBarUp = AnimationUtils.loadAnimation(this, R.anim.search_bar_up);
         closeSearchBtn = findViewById(R.id.closeSearchBtn);
         searchLayout = findViewById(R.id.searchSlider);
+        settingsLayout = findViewById(R.id.settingsLayout);
         searchButton = findViewById(R.id.searchBtn);
         usernameTextView = findViewById(R.id.usernameTextView);
         mapView = findViewById(R.id.map);
         centerMeBtn = findViewById(R.id.centerLocationBtn);
         logoutButton = findViewById(R.id.logoutBtn);
         settingsButton = findViewById(R.id.settingsBtn);
-        settingsLayout = findViewById(R.id.settingsLayout);
+        homeSearch = findViewById(R.id.homeSearch);
+        workSearch = findViewById(R.id.workSearch);
+        favoriteSearch = findViewById(R.id.favoriteSearch);
+        historySearch = findViewById(R.id.historySearch);
         settingsDown = AnimationUtils.loadAnimation(this, R.anim.settings_down);
         settingsUp = AnimationUtils.loadAnimation(this, R.anim.settings_up);
         uiManager.setMap(mapView);
         searchLayout.setVisibility(View.GONE);
         settingsLayout.setVisibility(View.GONE);
-        firebaseUser = logicManager.getCurrentUser();
         usernameTextView.setText(logicManager.getUser().getFName());
+
 
         createSettingsRadioButtons();
         initializeSearchAddressComponents();
@@ -170,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     }
 
 
-    private void saveHistory(Geocoder geocoder) {
+    private void saveHistory(Geocoder geocoder, String destination, String displayName) {
         History history = new History();
         IGeoPoint currentLocation = logicManager.getCurrentLocation();
 
@@ -180,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             e.printStackTrace();
         }
 
+        history.setDisplayName(displayName);
         history.setDestination(destination);
         history.setEmail(logicManager.getUser().getEmail());
         history.setTime(new Date());
@@ -188,13 +199,53 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
 
     @SuppressLint("ClickableViewAccessibility")
     private void initializeListeners() {
-        centerMeBtn.setOnClickListener(v -> uiManager.handleCenterMapClick());
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSettingsLayer();
+
+        homeSearch.setOnLongClickListener(v -> {
+            chooseHomeAddress();
+            return true;
+        });
+
+        homeSearch.setOnClickListener(v -> {
+            String home = logicManager.getUser().getHome();
+            if(home != null && !home.isEmpty()){
+                selectRoute(home, home);
+            }
+            else {
+                chooseHomeAddress();
             }
         });
+
+        workSearch.setOnLongClickListener(v -> {
+            chooseWorkAddress();
+            return true;
+        });
+
+        workSearch.setOnClickListener(v -> {
+            String work = logicManager.getUser().getWork();
+            if(work != null && !work.isEmpty()){
+                selectRoute(work, work);
+            }
+            else {
+                chooseWorkAddress();
+            }
+        });
+
+        favoriteSearch.setOnClickListener(v -> {
+            chooseFavorite();
+        });
+
+        historySearch.setOnClickListener(v -> {
+            if(!logicManager.getHistory(MainActivity.this).isEmpty()) {
+                chooseHistoryAddress();
+            }
+            else {
+                AlertDialog alert = new AlertDialog.Builder(MainActivity.this).setMessage("You have no history yet").setTitle("No History").create();
+                alert.show();
+            }
+        });
+
+        centerMeBtn.setOnClickListener(v -> uiManager.handleCenterMapClick());
+        settingsButton.setOnClickListener(v -> showSettingsLayer());
 
         logoutButton.setOnClickListener(v -> {
             logicManager.getAuth().signOut();
@@ -223,15 +274,46 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         });
     }
 
+    private void chooseFavorite() {
+        Intent favoriteActivity = new Intent(MainActivity.this, FavoritesActivity.class);
+        startActivityForResult(favoriteActivity, HAS_ADDRESS);
+    }
+
+    private void chooseHistoryAddress() {
+        Intent historyAddressActivity = new Intent(MainActivity.this, HistoryActivity.class);
+        startActivityForResult(historyAddressActivity, HAS_ADDRESS);
+    }
+
+    private void chooseWorkAddress() {
+        Intent addWorkActivity = new Intent(MainActivity.this, AddWorkActivity.class);
+        startActivityForResult(addWorkActivity, HAS_ADDRESS);
+    }
+
+    private void chooseHomeAddress() {
+        Intent addHomeActivity = new Intent(MainActivity.this, AddHomeActivity.class);
+        startActivityForResult(addHomeActivity, HAS_ADDRESS);
+    }
+
     private void showSettingsLayer() {
         settingsLayout.setVisibility(View.VISIBLE);
         settingsLayout.startAnimation(settingsUp);
         isSettingsOpen = true;
     }
 
+    private void hideSettingsLayer() {
+        settingsLayout.setVisibility(View.GONE);
+        settingsLayout.startAnimation(settingsDown);
+        UserSettings newUserSettings = getNewUserSettings();
+        if(!newUserSettings.equals(this.userSettings)){
+            logicManager.setUserSettings(newUserSettings, this);
+        }
+        isSettingsOpen = false;
+    }
+
     private void showSearchBar() {
         searchLayout.setVisibility(View.VISIBLE);
         searchLayout.startAnimation(searchBarDown);
+        isSearchOpen = true;
     }
 
     private void hideSearchBar() {
@@ -240,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         ((InputMethodManager) Objects.requireNonNull(getSystemService(Context.INPUT_METHOD_SERVICE)))
                 .hideSoftInputFromWindow(findViewById(R.id.mainLayout)
                         .getWindowToken(), 0);
+        isSearchOpen = false;
     }
 
     @Override
@@ -254,15 +337,6 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         unregisterReceiver(locationReceiver);
         super.onPause();
         uiManager.pauseFollowMe();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser;
-        if (logicManager.getCurrentUser() != null) {
-            updateUI();
-        }
     }
 
     private void initActivityViews() {
@@ -289,23 +363,9 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                destination = place.getName().toString();
                 String addressStr = place.getAddress().toString();
-                if((addressStr != null) && !(addressStr.equals(""))){
-                    List<Address> addressList = null;
-                    Geocoder geocoder = new Geocoder(MainActivity.this);
-                    try {
-                        addressList = geocoder.getFromLocationName(addressStr , 1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Address address = addressList.get(0);
-                    ArrayList<GeoPoint> destinationList = new ArrayList<>();
-                    destinationList.add(new GeoPoint(address.getLatitude(),address.getLongitude()));
-
-                    hideSearchBar();
-                    uiManager.showDestinationAndWaitForOk(destinationList);
-                }
+                String displayName = place.getName().toString();
+                selectRoute(addressStr, displayName);
             }
 
             @Override
@@ -316,20 +376,41 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         });
     }
 
-    //TODO: update UI while there is user connected
-    private void updateUI() {
+    private void selectRoute(String addressStr, String displayName) {
+        if(!(addressStr.equals(""))){
+            List<Address> addressList = null;
+            Geocoder geocoder = new Geocoder(MainActivity.this);
+            try {
+                addressList = geocoder.getFromLocationName(addressStr , 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Address address = addressList.get(0);
+            saveHistory(geocoder, addressStr, displayName);
+            ArrayList<GeoPoint> destinationList = new ArrayList<>();
+            destinationList.add(new GeoPoint(address.getLatitude(),address.getLongitude()));
+            hideSearchBar();
+            uiManager.showDestinationAndWaitForOk(destinationList);
+        }
     }
 
     @Override
     public void onBackPressed() {
         if(isSettingsOpen) {
-            settingsLayout.setVisibility(View.GONE);
-            settingsLayout.startAnimation(settingsDown);
-            UserSettings newUserSettings = getNewUserSettings();
-            if(!newUserSettings.equals(this.userSettings)){
-                logicManager.setUserSettings(newUserSettings, this);
-            }
-            isSettingsOpen = false;
+            hideSettingsLayer();
+        }
+        else if(isSearchOpen){
+            hideSearchBar();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == HAS_ADDRESS && data != null) {
+            String address = data.getStringExtra(EXTRA_ADDRESS);
+            String displayName = data.getStringExtra(EXTRA_DISPLAY_NAME);
+            selectRoute(address, displayName);
         }
     }
 

@@ -44,4 +44,20 @@
         <item>בטוח ביותר</item>
         <item>מהיר ביותר</item>
     </string-array>
+    <string name="home">בית</string>
+    <string name="work">עבודה</string>
+    <string name="favorites">מועדפים</string>
+    <string name="history">היסטוריה</string>
+    <string name="no_address">אין כתובת</string>
+    <string name="route_length_text">מרחק:</string>
+    <string name="duration_text">משך הנסיעה:</string>
+    <string name="minutes_text">דקות</string>
+    <string name="go_text">צא לדרך</string>
+    <string name="route_title">נתיב</string>
+    <string name="destination_text">האם זהו היעד הרצוי?</string>
+    <string name="add_favorite">הוסף כתובת</string>
+    <string name="deleteAddresQuestion">האם ברצונך למחוק את הכתובת שבחרת?</string>
+    <string name="yes">כן</string>
+    <string name="no">לא</string>
+    <string name="continue_text">המשך</string>
 </resources>

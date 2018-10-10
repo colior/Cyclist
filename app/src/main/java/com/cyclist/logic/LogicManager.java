@@ -36,6 +36,8 @@ import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -85,7 +87,7 @@ public class LogicManager {
         localStorageManager.saveSettings(userSettings, getAuth().getUid(), context);
         if(!userSettings.getRideType().equals(user.getRideType())){
             user.setRideType(userSettings.getRideType());
-            dbService.save(user, USERS_BUCKET, getAuth().getUid());
+            saveUser(user);
         }
     }
 
@@ -169,7 +171,7 @@ public class LogicManager {
     }
 
 
-    public boolean saveUser(User user) {
+    public boolean saveNewUser(User user) {
         try {
             dbService.saveNewUser(user);
         } catch (Exception ex) {
@@ -188,6 +190,15 @@ public class LogicManager {
         return true;
     }
 
+    public boolean saveUser(User user){
+        try {
+            dbService.save(user, USERS_BUCKET ,getAuth().getUid());
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
     public boolean saveHistory(History history, Context context) {
         try {
             dbService.save(history, HISTORY_BUCKET ,getAuth().getUid() + "/" + history.getTime().toString());
@@ -196,6 +207,10 @@ public class LogicManager {
             return false;
         }
         return true;
+    }
+
+    public List<History> getHistory(Context context){
+        return localStorageManager.readHistory(context);
     }
 
     public OnLocationChanged getOnLocationChangedListener() {

@@ -1,10 +1,14 @@
 package com.cyclist.logic.models;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +16,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void addFavorite(Favorite favoriteToAdd) {
+        favorites.forEach(favorite -> {
+            if(favoriteToAdd.getDisplayName().equals(favorite.getDisplayName())){
+                return;
+            }
+        });
+        favorites.add(favoriteToAdd);
+    }
+
+    public void deleteFavorite(int positionToDelete) {
+        favorites.remove(positionToDelete);
+    }
 
     public enum RideType
     {
@@ -51,9 +69,12 @@ public class User {
     private List<Favorite> favorites = new LinkedList<>();
 
     @Data
-    public class Favorite
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Favorite
     {
-        public String label;
+        public String displayName;
         public String address;
     }
 }

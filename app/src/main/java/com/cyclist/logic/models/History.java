@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class History implements Serializable {
     private String email;
+    private String displayName;
     private String destination;
     private String startingPoint;
     public Date time;

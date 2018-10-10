@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.FavoritesActivity"
+    android:background="@color/settingsBackground">
+
+    <RelativeLayout
+        android:id="@+id/addFavorite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:paddingTop="10dp"
+        android:paddingBottom="15dp"
+        android:background="@drawable/bottom_line_search">
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/add_favorites_icon"
+            android:layout_toStartOf="@+id/addFavoriteText"/>
+        <TextView
+            android:id="@+id/addFavoriteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/add_favorite"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+    <ListView
+        android:layout_below="@+id/addFavorite"
+        android:id="@+id/favoriteListView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/settingsBackground"
+        android:divider="#000"
+        android:dividerHeight="1dp"
+        />
+
+</RelativeLayout>

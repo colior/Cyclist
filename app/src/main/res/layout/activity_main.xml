@@ -56,7 +56,7 @@
             android:contentDescription="@string/bt_center_map_description"
             android:cropToPadding="true"
             android:src="@drawable/search"
-            android:layout_gravity="end" />
+            android:layout_gravity="right" />
 
     </FrameLayout>
 
@@ -73,7 +73,7 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/settingsBackground">
+                android:background="@drawable/bottom_line">
 
                 <ImageButton
                     android:layout_marginStart="10dp"
@@ -82,7 +82,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/settings"
-                    android:background="@color/settingsBackground"/>
+                    android:background="@color/settingsTop"/>
 
                 <TextView
                     android:id="@+id/usernameTextView"
@@ -102,7 +102,7 @@
                     android:paddingEnd="10dp"
                     android:layout_marginStart="11dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/settingsBackground"
+                    android:background="@color/settingsTop"
                     android:src="@drawable/logout" />
 
                 <android.support.v7.widget.CardView
@@ -111,7 +111,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20sp">
-
                     <fragment
                         android:id="@+id/place_autocomplete_fragment"
                         android:layout_width="match_parent"
@@ -120,6 +119,122 @@
                         />
                 </android.support.v7.widget.CardView>
 
+                <ScrollView
+                    android:layout_below="@+id/addressCardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:id="@+id/homeSearch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="15dp"
+                            android:background="@drawable/bottom_line_search">
+
+                            <ImageView
+                                android:id="@+id/homeIcon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="60dp"
+                                android:src="@drawable/home_icon" />
+
+                            <TextView
+                                android:id="@+id/homeText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_alignParentEnd="true"
+                                android:gravity="center"
+                                android:text="@string/home"
+                                android:textSize="30sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_below="@+id/homeSearch"
+                            android:id="@+id/workSearch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="15dp"
+                            android:background="@drawable/bottom_line_search">
+
+                            <ImageView
+                                android:id="@+id/workIcon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="60dp"
+                                android:src="@drawable/work_icon" />
+
+                            <TextView
+                                android:id="@+id/WorkText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentTop="true"
+                                android:gravity="center"
+                                android:text="@string/work"
+                                android:textSize="30sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_below="@+id/workSearch"
+                            android:id="@+id/favoriteSearch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="15dp"
+                            android:background="@drawable/bottom_line_search">
+                            <ImageView
+                                android:id="@+id/favoriteIcon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="60dp"
+                                android:src="@drawable/favorites_icon"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:gravity="center"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:text="@string/favorites"
+                                android:textSize="30sp"
+                                android:textStyle="bold"/>
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_below="@+id/favoriteSearch"
+                            android:id="@+id/historySearch"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="15dp"
+                            android:background="@drawable/bottom_line_search">
+                            <ImageView
+                                android:id="@+id/historyIcon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="60dp"
+                                android:src="@drawable/history_icon"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:gravity="center"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:text="@string/history"
+                                android:textSize="30sp"
+                                android:textStyle="bold"/>
+                        </RelativeLayout>
+                    </RelativeLayout>
+                </ScrollView>
             </RelativeLayout>
 
             <ImageButton
@@ -173,24 +288,6 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp">
-                    <!--<RadioButton-->
-                    <!--android:id="@+id/bikeTrailButton"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/bicycle_trail"-->
-                    <!--android:layout_marginStart="20dp" />-->
-                    <!--<RadioButton-->
-                    <!--android:id="@+id/sidewalkButton"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/sidewalk"-->
-                    <!--android:layout_marginStart="20dp" />-->
-                    <!--<RadioButton-->
-                    <!--android:id="@+id/roadButton"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/road"-->
-                    <!--android:layout_marginStart="20dp" />-->
                 </RadioGroup>
 
                 <TextView
@@ -213,16 +310,6 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp">
-                    <!--<RadioButton-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/safest"-->
-                    <!--android:layout_marginStart="20dp" />-->
-                    <!--<RadioButton-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/fastest"-->
-                    <!--android:layout_marginStart="20dp" />-->
                 </RadioGroup>
                 <TextView
                     android:layout_marginStart="10dp"

@@ -19,7 +19,7 @@ public class LocalStorageManager {
 
     private static final String SEARCH_HISTORY = "SearchHistory";
     private static final String USER_SETTINGS = "UserSettings";
-    private static final int MAX_HISTORY_NUMBER = 10;
+    private static final int MAX_HISTORY_NUMBER = 20;
 
     public void saveHistory(History history, Context context){
         FileOutputStream fileOutputStream;
@@ -53,7 +53,7 @@ public class LocalStorageManager {
             fileInputStream.close();
             objectInputStream.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            history = new LinkedList<>();
         }
         return history;
     }

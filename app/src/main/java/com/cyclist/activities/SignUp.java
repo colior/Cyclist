@@ -1,7 +1,6 @@
 package com.cyclist.activities;
 
 import android.app.DatePickerDialog;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +26,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -153,7 +151,7 @@ public class SignUp extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             User user = createUser();
-                            logicManager.saveUser(user);
+                            logicManager.saveNewUser(user);
                             Log.d(TAG, "Register:success");
 
                         } else {
