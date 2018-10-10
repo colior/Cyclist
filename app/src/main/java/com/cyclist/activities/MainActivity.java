@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int ROUTE_METHODS_ID = 2000;
 
     private boolean isSettingsOpen = false;
+    private boolean isReportOpen = false;
     private FirebaseUser firebaseUser;
     private MapView mapView;
     private TextView usernameTextView;
@@ -385,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
     private void showReportBar(){
         reportLayout.setVisibility(View.VISIBLE);
         reportLayout.startAnimation(reportBarDown);
+        isReportOpen = true;
     }
 
     private void hideSearchBar() {
@@ -440,6 +442,11 @@ public class MainActivity extends AppCompatActivity {
                 logicManager.setUserSettings(newUserSettings, this);
             }
             isSettingsOpen = false;
+        }
+        if(isReportOpen){
+            reportLayout.setVisibility(View.GONE);
+            reportLayout.startAnimation(reportBarUp);
+            isReportOpen = false;
         }
     }
 

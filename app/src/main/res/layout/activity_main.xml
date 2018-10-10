@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#00ffffff"
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#00ffffff"
@@ -61,7 +61,7 @@
         android:background="#00ffffff"
         android:contentDescription="@string/bt_center_map_description"
         android:cropToPadding="true"
-        android:src="@drawable/report"
+        android:src="@drawable/add_report"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintHorizontal_bias="1.1"
@@ -140,29 +140,46 @@
     <FrameLayout
         android:id="@+id/reportSlider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"> >
-
-        <LinearLayout
+        android:layout_height="100dp"
+        android:background="@color/settingsBackground">
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/reportText"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:text="Choose your update:"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_below="@+id/reportText">
 
                 <ImageButton
                     android:id="@+id/blockedBtn"
                     android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
                     android:src="@drawable/block"
-                    android:background="@color/colorPrimaryDark"/>
+                    android:background="@color/settingsBackground"/>
 
                 <ImageButton
                     android:id="@+id/policeBtn"
                     android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:background="@color/colorPrimaryDark"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/settingsBackground"
                     android:src="@drawable/police"
                     android:layout_toRightOf="@+id/blockedBtn"/>
 
@@ -171,7 +188,9 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:background="@color/colorPrimaryDark"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/settingsBackground"
                     android:src="@drawable/disruption"
                     android:layout_toRightOf="@+id/policeBtn"/>
 
@@ -180,11 +199,15 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:background="@color/colorPrimaryDark"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/settingsBackground"
                     android:src="@drawable/danger"
                     android:layout_toRightOf="@+id/disruptionBtn" />
 
-        </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
     </FrameLayout>
 
     <RelativeLayout
