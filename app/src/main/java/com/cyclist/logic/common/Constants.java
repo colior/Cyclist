@@ -8,6 +8,7 @@ public class Constants {
     public static final String LONG_TAG = "Longitude";
     public static final String PROVIDER_TAG = "Provider";
     public static final String BROADCAST_ACTION = "com.cyclist.broadcast";
+    public static final String CYCLEWAY_TAG = "routeType=bicycle";
     public static final String HISTORY_BUCKET = "History";
     public static final String REPORTS_BUCKET = "Reports";
     public static final String USERS_BUCKET = "Users";

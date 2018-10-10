@@ -29,14 +29,14 @@ public class LocationReceiver extends BroadcastReceiver {
                 mContext = context;
             }
             Double latDefualt, longDefualt;
-
             if (currentLocation != null) {
                 latDefualt = currentLocation.getLatitude();
                 longDefualt = currentLocation.getLongitude();
             } else {
-                latDefualt = 32.070120d;
-                longDefualt = 34.771720d;
-                //TODO:: Change these points which points to my house.
+                //TODO:: Change maybe do something better then return...
+                currentLocation = logicManager.getCurrentLocation();
+                latDefualt = 32.047732d;
+                longDefualt = 34.7587758d;
             }
 
             Double latitude = intent.getDoubleExtra(LAT_TAG, latDefualt);
@@ -44,8 +44,8 @@ public class LocationReceiver extends BroadcastReceiver {
             currentLocation = new GeoPoint(latitude, longitude);
             if (listener != null) {
                 listener.onLocationChanged(currentLocation);
-                logicManager.setCurrentLocation(currentLocation);
             }
+            logicManager.setCurrentLocation(currentLocation);
         }
     }
 }
