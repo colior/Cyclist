@@ -2,6 +2,7 @@ package com.cyclist.activities;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -87,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     private RelativeLayout workSearch;
     private RelativeLayout historySearch;
     private RelativeLayout favoriteSearch;
+    private ProgressDialog loadingBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -363,6 +366,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+                enableLoadingBar();
                 String addressStr = place.getAddress().toString();
                 String displayName = place.getName().toString();
                 selectRoute(addressStr, displayName);
@@ -451,8 +455,20 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
 
     @Override
     public void showRoutingFragments() {
+        disableProgressBar();
         findViewById(R.id.fragmentContainer).setVisibility(View.VISIBLE);
         findViewById(R.id.bottomFragmentContainer).setVisibility(View.VISIBLE);
     }
 
+    private void enableLoadingBar() {
+        loadingBar = new ProgressDialog(this);
+        loadingBar.setTitle("Cyclist");
+        loadingBar.setMessage("Please wait");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
+    }
+
+    public void disableProgressBar() {
+        loadingBar.hide();
+    }
 }

@@ -68,7 +68,15 @@ public class LogicManager {
     UserSettings userSettings;
     private RoadNode currentClosestNode;
 
-    private LogicManager() {
+    public LogicManager(SignIn signIn) {
+        this.signIn = signIn;
+        dbService = new DBService(this);
+        localStorageManager = new LocalStorageManager();
+        roadManager.addRequestOption(Constants.CYCLEWAY_TAG);
+        instance = this;
+    }
+
+    public LogicManager() {
         dbService = new DBService(this);
         localStorageManager = new LocalStorageManager();
         roadManager.addRequestOption(Constants.CYCLEWAY_TAG);
@@ -108,6 +116,7 @@ public class LogicManager {
         if (user != null) {
             signIn.onUserSignedIn();
         }
+        signIn.disableProgressBar();
     }
 
     public void connect() {
