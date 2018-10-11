@@ -74,4 +74,9 @@
     <string name="no">No</string>
     <string name="history">History</string>
     <string name="continue_text">Continue</string>
+    <string name="choose_your_update">Choose your update:</string>
+    <string name="welcome_to_cyclict">Welcome To Cyclist!</string>
+    <string name="welcome_message">Please wait while we check your details</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="added_report">Report Added Successfully</string>
 </resources>

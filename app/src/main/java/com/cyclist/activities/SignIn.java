@@ -313,14 +313,16 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     private void enableLoadingBar() {
         loadingBar = new ProgressDialog(this);
-        loadingBar.setTitle("Welcome To Cyclist!");
-        loadingBar.setMessage("Please wait while we check your details");
+        loadingBar.setTitle(getString(R.string.welcome_to_cyclict));
+        loadingBar.setMessage(getString(R.string.welcome_message));
         loadingBar.setCanceledOnTouchOutside(false);
         loadingBar.show();
     }
 
     public void disableProgressBar() {
-        loadingBar.hide();
+        if(loadingBar != null) {
+            loadingBar.hide();
+        }
     }
 
 
