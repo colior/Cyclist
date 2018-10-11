@@ -255,8 +255,8 @@ public class SignUp extends AppCompatActivity {
 
     private void enableLoadingBar() {
         loadingBar = new ProgressDialog(this);
-        loadingBar.setTitle("Welcome To Cyclist!");
-        loadingBar.setMessage("Please wait while we update your details");
+        loadingBar.setTitle(R.string.welcome_to_cyclict);
+        loadingBar.setMessage(getString(R.string.welcome_to_cyclict));
         loadingBar.setCanceledOnTouchOutside(false);
         loadingBar.show();
     }

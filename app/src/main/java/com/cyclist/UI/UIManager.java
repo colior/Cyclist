@@ -32,12 +32,15 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import lombok.Getter;
+
 import static org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK;
 
 public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalculated, RouteDetailsFragment.closeListener {
 
     private Context mContext;
     private MapView map;
+    @Getter
     private GeoPoint currentDeviceLocation;
     private MyLocationNewOverlay myLocationOverlay;
     private CompassOverlay compassOverlay;

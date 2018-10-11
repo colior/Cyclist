@@ -23,6 +23,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cyclist.R;
 import com.cyclist.UI.InstructionsFragment;
@@ -33,6 +34,7 @@ import com.cyclist.logic.FollowLocationService;
 import com.cyclist.logic.LocationReceiver;
 import com.cyclist.logic.LogicManager;
 import com.cyclist.logic.models.History;
+import com.cyclist.logic.models.Report;
 import com.cyclist.logic.models.User;
 import com.cyclist.logic.models.UserSettings;
 import com.cyclist.logic.search.Profile;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     public static final String EXTRA_ADDRESS = "address";
 
     private boolean isSettingsOpen = false;
+    private boolean isReportsOpen = false;
     private boolean isSearchOpen = false;
     private MapView mapView;
     private TextView usernameTextView;
@@ -89,6 +92,14 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     private RelativeLayout historySearch;
     private RelativeLayout favoriteSearch;
     private ProgressDialog loadingBar;
+    private ImageButton reportButton;
+    private ImageButton blockedBtn;
+    private ImageButton policeBtn;
+    private ImageButton distuptionBtn;
+    private ImageButton unknownDangerBtn;
+    private FrameLayout reportLayout;
+    private Animation reportBarDown;
+    private Animation reportBarUp;
 
 
     @Override
@@ -134,8 +145,14 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         searchLayout.setVisibility(View.GONE);
         settingsLayout.setVisibility(View.GONE);
         usernameTextView.setText(logicManager.getUser().getFName());
+        reportBarDown = AnimationUtils.loadAnimation(this, R.anim.report_bar_down);
+        reportBarUp = AnimationUtils.loadAnimation(this, R.anim.report_bar_up);
+        reportLayout = findViewById(R.id.reportSlider);
+        reportButton = findViewById(R.id.reportBtn);
+        reportLayout.setVisibility(View.GONE);
 
 
+        initializeReportComponents();
         createSettingsRadioButtons();
         initializeSearchAddressComponents();
         initializeListeners();
@@ -275,6 +292,14 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             }
             return true;
         });
+
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showReportBar();
+            }
+        });
+
     }
 
     private void chooseFavorite() {
@@ -381,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     }
 
     private void selectRoute(String addressStr, String displayName) {
-        if(!(addressStr.equals(""))){
+        if(!(addressStr.isEmpty())){
             List<Address> addressList = null;
             Geocoder geocoder = new Geocoder(MainActivity.this);
             try {
@@ -394,6 +419,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             ArrayList<GeoPoint> destinationList = new ArrayList<>();
             destinationList.add(new GeoPoint(address.getLatitude(),address.getLongitude()));
             hideSearchBar();
+            disableProgressBar();
             uiManager.showDestinationAndWaitForOk(destinationList);
         }
     }
@@ -405,6 +431,9 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
         }
         else if(isSearchOpen){
             hideSearchBar();
+        }
+        else if(isReportsOpen){
+            hideReportBar();
         }
     }
 
@@ -463,8 +492,8 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
 
     private void enableLoadingBar() {
         loadingBar = new ProgressDialog(this);
-        loadingBar.setTitle("Cyclist");
-        loadingBar.setMessage("Please wait");
+        loadingBar.setTitle(R.string.app_name);
+        loadingBar.setMessage(getString(R.string.please_wait));
         loadingBar.setCanceledOnTouchOutside(false);
         loadingBar.show();
     }
@@ -474,4 +503,47 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
             loadingBar.hide();
         }
     }
+
+    private void initializeReportComponents() {
+        blockedBtn = findViewById(R.id.blockedBtn);
+        policeBtn = findViewById(R.id.policeBtn);
+        distuptionBtn = findViewById(R.id.disruptionBtn);
+        unknownDangerBtn = findViewById(R.id.unknownDangerBtn);
+        blockedBtn.setOnClickListener(v -> addReport(Report.ReportDescription.BLOCKED));
+        policeBtn.setOnClickListener(v -> addReport(Report.ReportDescription.POLICE));
+        distuptionBtn.setOnClickListener(v -> addReport(Report.ReportDescription.DISRUPTION));
+        unknownDangerBtn.setOnClickListener(v -> addReport(Report.ReportDescription.UNKNOWN_DANGER));
+    }
+
+    private void addReport(Report.ReportDescription reportDescription) {
+        Report report = Report.builder()
+                .description(reportDescription)
+                .username(logicManager.getUser().getEmail())
+                .isActive(true)
+                .time(new Date())
+                .destination(uiManager.getCurrentDeviceLocation())
+                .build();
+        logicManager.saveReport(report);
+        hideReportBar();
+        Toast.makeText(this, R.string.added_report,
+                Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void showReportBar(){
+        reportLayout.setVisibility(View.VISIBLE);
+        reportLayout.startAnimation(reportBarDown);
+        isReportsOpen = true;
+    }
+    private void hideReportBar() {
+        reportLayout.setVisibility(View.GONE);
+        reportLayout.startAnimation(reportBarUp);
+        ((InputMethodManager) Objects.requireNonNull(getSystemService(Context.INPUT_METHOD_SERVICE)))
+                .hideSoftInputFromWindow(findViewById(R.id.mainLayout)
+                        .getWindowToken(), 0);
+        isReportsOpen = false;
+    }
+
+
+
 }
