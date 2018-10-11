@@ -1,5 +1,6 @@
 package com.cyclist.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,7 +42,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     private static final int RC_SIGN_IN = 9001;
 
-    private LogicManager logicManager = LogicManager.getInstance();
+    private LogicManager logicManager;
     private EditText username;
     private EditText password;
     private Button signUpButton;
@@ -49,12 +50,14 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     private LoginButton facebookLoginButton;
     private CallbackManager facebookCallbackManager;
     private GoogleSignInClient mGoogleSignInClient;
+    private ProgressDialog loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_singin);
+        enableLoadingBar();
         initializeComponents();
     }
 
@@ -64,7 +67,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void initializeComponents() {
-        logicManager.setSignIn(this);
+        logicManager = new LogicManager(this);
         username = findViewById(R.id.usernameEditText);
         password = findViewById(R.id.passwordEditText);
         signUpButton = findViewById(R.id.signUpButton);
@@ -121,19 +124,17 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     public void signIn(final String email, final String password) {
         logicManager.getAuth().signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(SignIn.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            logicManager.connect();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            updateFailure(getResources().getString(R.string.error_sign_in_failed));
-                        }
+                .addOnCompleteListener(SignIn.this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithEmail:success");
+                        logicManager.connect();
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        updateFailure(getResources().getString(R.string.error_sign_in_failed));
                     }
+                    disableProgressBar();
                 });
     }
 
@@ -143,12 +144,14 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void goToMainActivity() {
+            disableProgressBar();
             Intent mainActivityIntent = new Intent(SignIn.this, MainActivity.class);
             startActivity(mainActivityIntent);
             finish();
     }
 
     public void onSignInButtonClick(View view) {
+        enableLoadingBar();
         if (!username.getText().toString().isEmpty() && !password.getText().toString().isEmpty()) {
             signIn(username.getText().toString(), password.getText().toString());
         }
@@ -188,6 +191,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        enableLoadingBar();
         signIn();
     }
 
@@ -211,6 +215,9 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
                 updateFailure(getResources().getString(R.string.errorOccurred));
+            }
+            finally {
+                disableProgressBar();
             }
         }
         else{
@@ -245,6 +252,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             updateFailure(getResources().getString(R.string.errorOccurred));
                         }
+                        disableProgressBar();
                     }
                 });
     }
@@ -264,16 +272,19 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookAccessToken(loginResult.getAccessToken());
+                disableProgressBar();
             }
 
             @Override
             public void onCancel() {
                 updateFailure(getResources().getString(R.string.loginCanceled));
+                disableProgressBar();
             }
 
             @Override
             public void onError(FacebookException exception) {
                 updateFailure(getResources().getString(R.string.errorOccurred));
+                disableProgressBar();
             }
         });
     }
@@ -295,7 +306,22 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             updateFailure(getResources().getString(R.string.errorOccurred));
                         }
+                        disableProgressBar();
                     }
                 });
     }
+
+    private void enableLoadingBar() {
+        loadingBar = new ProgressDialog(this);
+        loadingBar.setTitle("Welcome To Cyclist!");
+        loadingBar.setMessage("Please wait while we check your details");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
+    }
+
+    public void disableProgressBar() {
+        loadingBar.hide();
+    }
+
+
 }

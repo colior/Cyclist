@@ -84,6 +84,9 @@ public class DBService{
                 }
             });
         }
+        else {
+            logicManager.setUser(null);
+        }
     }
 
     public FirebaseAuth getMAuth() {

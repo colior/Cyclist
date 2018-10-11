@@ -1,6 +1,7 @@
 package com.cyclist.activities;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,6 +45,7 @@ public class SignUp extends AppCompatActivity {
     private TextView datePickerTextView;
     private Spinner rides;
     private DatePickerDialog.OnDateSetListener dateSetListener;
+    private ProgressDialog loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class SignUp extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                enableLoadingBar();
                 register();
             }
         });
@@ -121,6 +124,7 @@ public class SignUp extends AppCompatActivity {
         if(verifyFields()) {
             signUp(email.getText().toString(), password.getText().toString());
         }
+        disableProgressBar();
     }
 
     private void updateDate(int year, int month, int dayOfMonth) {
@@ -247,5 +251,17 @@ public class SignUp extends AppCompatActivity {
             result = false;
         }
         return result;
+    }
+
+    private void enableLoadingBar() {
+        loadingBar = new ProgressDialog(this);
+        loadingBar.setTitle("Welcome To Cyclist!");
+        loadingBar.setMessage("Please wait while we update your details");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
+    }
+
+    public void disableProgressBar() {
+        loadingBar.hide();
     }
 }
