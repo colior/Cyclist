@@ -412,6 +412,7 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == HAS_ADDRESS && data != null) {
+            enableLoadingBar();
             String address = data.getStringExtra(EXTRA_ADDRESS);
             String displayName = data.getStringExtra(EXTRA_DISPLAY_NAME);
             selectRoute(address, displayName);
@@ -469,6 +470,8 @@ public class MainActivity extends AppCompatActivity implements OnNewInstruction{
     }
 
     public void disableProgressBar() {
-        loadingBar.hide();
+        if(loadingBar != null) {
+            loadingBar.hide();
+        }
     }
 }
