@@ -22,8 +22,8 @@
         android:id="@+id/mapAndButtonsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fragmentContainer"
-        android:layout_above="@+id/bottomFragmentContainer">
+        android:layout_above="@+id/bottomFragmentContainer"
+        android:layout_below="@id/fragmentContainer">
 
         <org.osmdroid.views.MapView
             android:id="@+id/map"
@@ -34,6 +34,8 @@
             android:id="@+id/centerLocationBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -41,14 +43,13 @@
             android:background="#00ffffff"
             android:contentDescription="@string/bt_center_map_description"
             android:cropToPadding="true"
-            android:src="@drawable/ic_center_map"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"/>
+            android:src="@drawable/ic_center_map" />
 
         <ImageButton
             android:id="@+id/searchBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -56,14 +57,14 @@
             android:background="#00ffffff"
             android:contentDescription="@string/bt_center_map_description"
             android:cropToPadding="true"
-            android:src="@drawable/search"
-            android:layout_gravity="right" />
+            android:src="@drawable/search" />
 
         <ImageButton
             android:id="@+id/reportBtn"
-            android:layout_below="@id/searchBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/searchBtn"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -78,26 +79,27 @@
     <FrameLayout
         android:id="@+id/searchSlider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
+
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottom_line">
 
                 <ImageButton
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
                     android:id="@+id/settingsBtn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/settings"
-                    android:background="@color/settingsTop"/>
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/settingsTop"
+                    android:src="@drawable/settings" />
 
                 <TextView
                     android:id="@+id/usernameTextView"
@@ -114,41 +116,43 @@
                     android:layout_width="50dp"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
-                    android:paddingEnd="10dp"
                     android:layout_marginStart="11dp"
                     android:layout_marginTop="10dp"
                     android:background="@color/settingsTop"
+                    android:paddingEnd="10dp"
                     android:src="@drawable/logout" />
 
                 <android.support.v7.widget.CardView
                     android:id="@+id/addressCardView"
-                    android:layout_below="@id/usernameTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/usernameTextView"
                     android:layout_margin="20sp">
+
                     <fragment
                         android:id="@+id/place_autocomplete_fragment"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-                        />
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
                 </android.support.v7.widget.CardView>
 
                 <ScrollView
-                    android:layout_below="@+id/addressCardView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/addressCardView">
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                         <RelativeLayout
                             android:id="@+id/homeSearch"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/bottom_line_search"
                             android:gravity="center"
-                            android:paddingTop="10dp"
                             android:paddingBottom="15dp"
-                            android:background="@drawable/bottom_line_search">
+                            android:paddingTop="10dp">
 
                             <ImageView
                                 android:id="@+id/homeIcon"
@@ -170,15 +174,16 @@
                                 android:textSize="30sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
+
                         <RelativeLayout
-                            android:layout_below="@+id/homeSearch"
                             android:id="@+id/workSearch"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/homeSearch"
+                            android:background="@drawable/bottom_line_search"
                             android:gravity="start"
-                            android:paddingTop="10dp"
                             android:paddingBottom="15dp"
-                            android:background="@drawable/bottom_line_search">
+                            android:paddingTop="10dp">
 
                             <ImageView
                                 android:id="@+id/workIcon"
@@ -200,53 +205,59 @@
                                 android:textSize="30sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
+
                         <RelativeLayout
-                            android:layout_below="@+id/workSearch"
                             android:id="@+id/favoriteSearch"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/workSearch"
+                            android:background="@drawable/bottom_line_search"
                             android:gravity="start"
-                            android:paddingTop="10dp"
                             android:paddingBottom="15dp"
-                            android:background="@drawable/bottom_line_search">
+                            android:paddingTop="10dp">
+
                             <ImageView
                                 android:id="@+id/favoriteIcon"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:layout_marginStart="60dp"
-                                android:src="@drawable/favorites_icon"/>
+                                android:src="@drawable/favorites_icon" />
+
                             <TextView
                                 android:layout_width="match_parent"
-                                android:gravity="center"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
+                                android:gravity="center"
                                 android:text="@string/favorites"
                                 android:textSize="30sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold" />
                         </RelativeLayout>
+
                         <RelativeLayout
-                            android:layout_below="@+id/favoriteSearch"
                             android:id="@+id/historySearch"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/favoriteSearch"
+                            android:background="@drawable/bottom_line_search"
                             android:gravity="start"
-                            android:paddingTop="10dp"
                             android:paddingBottom="15dp"
-                            android:background="@drawable/bottom_line_search">
+                            android:paddingTop="10dp">
+
                             <ImageView
                                 android:id="@+id/historyIcon"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:layout_marginStart="60dp"
-                                android:src="@drawable/history_icon"/>
+                                android:src="@drawable/history_icon" />
+
                             <TextView
                                 android:layout_width="match_parent"
-                                android:gravity="center"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="20dp"
+                                android:gravity="center"
                                 android:text="@string/history"
                                 android:textSize="30sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold" />
                         </RelativeLayout>
                     </RelativeLayout>
                 </ScrollView>
@@ -265,68 +276,70 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="@color/settingsBackground">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/reportText"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
+                android:text="@string/choose_your_update"
                 android:textSize="25sp"
-                android:textStyle="bold"
-                android:text="@string/choose_your_update"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_below="@+id/reportText"
                 android:gravity="center_horizontal"
-                android:layout_below="@+id/reportText">
+                android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/blockedBtn"
-                    android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginRight="15dp"
                     android:layout_marginLeft="15dp"
-                    android:src="@drawable/block"
-                    android:background="@color/settingsBackground"/>
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/settingsBackground"
+                    android:src="@drawable/block" />
 
                 <ImageButton
                     android:id="@+id/policeBtn"
-                    android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginRight="15dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/blockedBtn"
                     android:background="@color/settingsBackground"
-                    android:src="@drawable/police"
-                    android:layout_toRightOf="@+id/blockedBtn"/>
+                    android:src="@drawable/police" />
 
                 <ImageButton
                     android:id="@+id/disruptionBtn"
-                    android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginRight="15dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/policeBtn"
                     android:background="@color/settingsBackground"
-                    android:src="@drawable/disruption"
-                    android:layout_toRightOf="@+id/policeBtn"/>
+                    android:src="@drawable/disruption" />
 
                 <ImageButton
                     android:id="@+id/unknownDangerBtn"
-                    android:layout_marginTop="10dp"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginRight="15dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/disruptionBtn"
                     android:background="@color/settingsBackground"
-                    android:src="@drawable/danger"
-                    android:layout_toRightOf="@+id/disruptionBtn" />
+                    android:src="@drawable/danger" />
 
             </LinearLayout>
 
@@ -338,88 +351,92 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/settingsBackground">
+
         <TextView
             android:id="@+id/topLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bottom_line"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
             android:text="@string/settings"
             android:textAlignment="center"
-            android:textStyle="bold"
             android:textSize="30sp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:background="@drawable/bottom_line"/>
+            android:textStyle="bold" />
 
         <ScrollView
-            android:layout_below="@id/topLabel"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_below="@id/topLabel">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:id="@+id/roadTypeText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="start"
                     android:text="@string/road_type"
-                    android:textStyle="bold"
                     android:textSize="25sp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"/>
+                    android:textStyle="bold" />
+
                 <RadioGroup
                     android:id="@+id/roadTypes"
-                    android:layout_below="@id/roadTypeText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:orientation="horizontal"
+                    android:layout_below="@id/roadTypeText"
+                    android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginStart="20dp">
-                </RadioGroup>
+                    android:gravity="start"
+                    android:orientation="horizontal"></RadioGroup>
 
                 <TextView
-                    android:layout_marginStart="10dp"
-                    android:layout_below="@+id/roadTypes"
                     android:id="@+id/routeMethodText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/roadTypes"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="start"
                     android:text="@string/route_method"
-                    android:textStyle="bold"
                     android:textSize="25sp"
-                    android:layout_marginTop="10dp"/>
+                    android:textStyle="bold" />
+
                 <RadioGroup
                     android:id="@+id/routeMethods"
-                    android:layout_below="@id/routeMethodText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:orientation="horizontal"
+                    android:layout_below="@id/routeMethodText"
+                    android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginStart="20dp">
-                </RadioGroup>
+                    android:gravity="start"
+                    android:orientation="horizontal"></RadioGroup>
+
                 <TextView
-                    android:layout_marginStart="10dp"
-                    android:layout_below="@+id/routeMethods"
                     android:id="@+id/rideTypeText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/routeMethods"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="start"
                     android:text="@string/ride_type"
-                    android:textStyle="bold"
                     android:textSize="25sp"
-                    android:layout_marginTop="10dp"/>
+                    android:textStyle="bold" />
+
                 <RadioGroup
                     android:id="@+id/ridesTypes"
-                    android:layout_below="@id/rideTypeText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:orientation="vertical"
+                    android:layout_below="@id/rideTypeText"
+                    android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginStart="20dp">
-                </RadioGroup>
+                    android:gravity="start"
+                    android:orientation="vertical"></RadioGroup>
             </RelativeLayout>
         </ScrollView>
     </RelativeLayout>

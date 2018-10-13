@@ -125,7 +125,7 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
     @Override
     public void onLocationChanged(GeoPoint location) {
         currentDeviceLocation = location;
-        if (firstLunch){
+        if (firstLunch) {
             map.getController().animateTo(currentDeviceLocation);
             firstLunch = false;
         }
@@ -241,7 +241,6 @@ public class UIManager implements OnCenterMeClick, OnLocationChanged, OnRoadCalc
     public MapView getMapView() {
         return map;
     }
-
 
 
     public void setInstructionListener(OnNewInstruction instructionListener) {

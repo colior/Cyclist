@@ -321,7 +321,7 @@ public class SignIn extends AppCompatActivity implements View.OnClickListener {
 
     public void disableProgressBar() {
         if(loadingBar != null) {
-            loadingBar.hide();
+            loadingBar.dismiss();
         }
     }
 

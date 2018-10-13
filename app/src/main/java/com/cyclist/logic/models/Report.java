@@ -1,7 +1,5 @@
 package com.cyclist.logic.models;
 
-import android.location.Geocoder;
-
 import org.osmdroid.util.GeoPoint;
 
 import java.util.Date;
